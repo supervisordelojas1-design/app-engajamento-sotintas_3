@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Validação · Corrida do Engajamento · Só Tintas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#1F3864; --red:#C00000; --paper:#EEF2F8; --card:#FFFFFF;
+    --ink:#22304A; --muted:#64748B; --line:#DDE3EE;
+    --ok:#1B7A3D; --ok-bg:#E4F4E9; --no:#B4232A; --no-bg:#FCE8E9;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--paper);color:var(--ink);font-size:15px}
+  .wrap{max-width:1100px;margin:0 auto;padding:0 16px}
+
+  header{background:var(--navy);color:#fff;padding:16px 0;border-bottom:5px solid var(--red)}
+  header .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  header h1{font-family:'Archivo',sans-serif;font-weight:800;font-size:clamp(18px,3vw,24px);
+            text-transform:uppercase;letter-spacing:.4px}
+  header h1 small{display:block;font-family:'Inter';font-weight:600;font-size:12px;opacity:.82;text-transform:none;margin-top:3px}
+  .tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  select,button.b{font:inherit;border-radius:8px;border:1px solid rgba(255,255,255,.4);
+        background:rgba(255,255,255,.12);color:#fff;padding:8px 12px;font-weight:700;cursor:pointer}
+  select option{color:#111}
+  .cnt{background:#fff;color:var(--navy);border-radius:999px;padding:6px 14px;font-family:'Archivo';font-weight:800}
+
+  /* login PIN */
+  .lock{max-width:380px;margin:60px auto;background:#fff;border:1px solid var(--line);border-radius:16px;padding:26px;text-align:center}
+  .lock h2{font-family:'Archivo';color:var(--navy);text-transform:uppercase;font-size:18px;margin-bottom:6px}
+  .lock p{color:var(--muted);font-size:13px;margin-bottom:16px}
+  .lock input{width:100%;padding:12px;border:1.5px solid var(--line);border-radius:10px;font:inherit;
+        font-weight:800;text-align:center;letter-spacing:4px;color:var(--navy);background:#FFFBEA;margin-bottom:12px}
+  .lock button{width:100%;background:var(--red);color:#fff;border:0;border-radius:10px;padding:13px;
+        font-family:'Archivo';font-weight:800;text-transform:uppercase;cursor:pointer}
+  .lock .err{color:var(--no);font-size:13px;font-weight:700;min-height:18px;margin-top:8px}
+
+  main{padding:18px 0 40px}
+  .vazio{text-align:center;color:var(--muted);padding:50px 20px;font-size:15px}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;
+        margin-bottom:14px;display:grid;grid-template-columns:300px 1fr;gap:0}
+  @media(max-width:640px){ .card{grid-template-columns:1fr} }
+  .print{background:#0E1726;display:flex;align-items:center;justify-content:center;min-height:220px}
+  .print img{width:100%;height:100%;max-height:420px;object-fit:contain;display:block}
+  .print a.abrir{color:#cfe0ff;font-size:12px;text-decoration:none;padding:10px}
+  .info{padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+  .who b{font-family:'Archivo';font-size:17px;color:var(--navy)}
+  .who span{color:var(--muted);font-size:12.5px}
+  .tags{display:flex;flex-wrap:wrap;gap:6px}
+  .tag{background:#EEF3FB;border:1px solid var(--line);border-radius:999px;padding:4px 10px;font-size:12px;font-weight:700;color:var(--navy)}
+  .tag.pts{background:var(--navy);color:#fff}
+  .lido{background:#FBFCFE;border:1px dashed var(--line);border-radius:10px;padding:10px 12px;font-size:13px}
+  .lido b{display:block;font-size:10.5px;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+  .lido .txt{color:var(--navy);font-weight:600;word-break:break-word}
+  .acts{display:flex;gap:10px;margin-top:auto}
+  .acts button{flex:1;border:0;border-radius:10px;padding:12px;font-family:'Archivo';font-weight:800;
+        text-transform:uppercase;letter-spacing:.4px;cursor:pointer;font-size:14px}
+  .val{background:var(--ok-bg);color:var(--ok)} .val:hover{background:#CFEBD8}
+  .rej{background:var(--no-bg);color:var(--no)} .rej:hover{background:#F6D5D7}
+  .card.saindo{opacity:.35;transform:scale(.99);transition:.25s}
+
+  .toast{position:fixed;left:16px;right:16px;bottom:20px;max-width:400px;margin:0 auto;
+        background:var(--navy);color:#fff;padding:12px 14px;border-radius:10px;font-weight:600;
+        font-size:13.5px;display:none;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.2)}
+</style>
+</head>
+<body>
+
+<header><div class="wrap">
+  <h1>Validação de Envios<small>Corrida do Engajamento · Só Tintas</small></h1>
+  <div class="tools" id="tools" style="display:none">
+    <select id="fSup"><option value="">Todos os supervisores</option>
+      <option>BRUNO</option><option>TALITA</option><option>THIAGO</option><option>RAMON</option></select>
+    <button class="b" id="refresh">Atualizar</button>
+    <span class="cnt" id="cnt">0 pendentes</span>
+  </div>
+</div></header>
+
+<div id="login">
+  <div class="lock">
+    <h2>Área do gestor</h2>
+    <p>Digite o PIN de validação para ver os envios pendentes.</p>
+    <input type="password" id="pin" inputmode="numeric" placeholder="• • • •" autocomplete="off">
+    <button id="entrar">Entrar</button>
+    <div class="err" id="loginErr"></div>
+  </div>
+</div>
+
+<main class="wrap" id="painel" style="display:none">
+  <div id="lista"></div>
+  <div class="vazio" id="vazio" style="display:none">Nenhum envio pendente por aqui. 🎉</div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ================= CONFIGURAÇÃO ================= */
+const BASE_URL = 'https://script.google.com/macros/s/AKfycbyxjfpGjWt2Hc8Jofj9b-eR5y9M8Reu9gFJbkfct38ORaZ8tKII-qE7XJeTsM8sT9x4aw/exec';   // mesma URL /exec do Apps Script
+
+const ACAO_LABEL = {
+  direct_contato:'Direct para um contato', comentario_5:'Comentário marcando 5 @',
+  video_externo:'Vídeo externo (WhatsApp/direct)', curtida:'Curtiu o vídeo oficial',
+  seguir:'Segue a página oficial'
+};
+const el = id => document.getElementById(id);
+let PIN = '', pendentes = [];
+
+/* ---- login ---- */
+el('entrar').addEventListener('click', entrar);
+el('pin').addEventListener('keydown', e=>{ if(e.key==='Enter') entrar(); });
+function entrar(){
+  PIN = el('pin').value.trim();
+  if(!PIN){ el('loginErr').textContent='Digite o PIN.'; return; }
+  if(BASE_URL.indexOf('script.google.com')===-1){ el('loginErr').textContent='Falta configurar o BASE_URL.'; return; }
+  el('loginErr').textContent='Verificando…';
+  carrega(true);
+}
+
+/* ---- carrega pendentes ---- */
+function carrega(primeira){
+  fetch(BASE_URL + '?tipo=pendentes&pin=' + encodeURIComponent(PIN))
+    .then(r=>r.json())
+    .then(res=>{
+      if(!res || !res.ok){
+        if(primeira) el('loginErr').textContent = (res && res.erro==='pin') ? 'PIN incorreto.' : 'Erro ao entrar.';
+        return;
+      }
+      if(primeira){ el('login').style.display='none'; el('painel').style.display='block'; el('tools').style.display='flex'; }
+      pendentes = res.pendentes || [];
+      render();
+    })
+    .catch(()=>{ if(primeira) el('loginErr').textContent='Sem conexão com o servidor.'; });
+}
+
+/* ---- render ---- */
+function render(){
+  const sup = el('fSup').value;
+  const lista = sup ? pendentes.filter(p=>p.sup===sup) : pendentes;
+  el('cnt').textContent = lista.length + (lista.length===1?' pendente':' pendentes');
+  const box = el('lista'); box.innerHTML='';
+  el('vazio').style.display = lista.length ? 'none' : 'block';
+
+  lista.forEach(p=>{
+    const c = document.createElement('div');
+    c.className='card'; c.dataset.proto=p.proto;
+    const img = p.img ? '<img src="'+p.img+'" alt="print" referrerpolicy="no-referrer" onerror="this.style.display=\'none\'">'
+                      : '<a class="abrir" href="'+p.link+'" target="_blank">abrir print no Drive</a>';
+    c.innerHTML =
+      '<div class="print">'+img+'</div>'+
+      '<div class="info">'+
+        '<div class="who"><b>'+p.nome+'</b> <span>'+p.insta+' · Loja '+p.loja+' · '+p.sup+' · '+p.data+'</span></div>'+
+        '<div class="tags"><span class="tag">'+(ACAO_LABEL[p.acao]||p.acao)+'</span><span class="tag pts">+'+p.pontos+' pts</span>'+
+          '<a class="tag" href="'+p.link+'" target="_blank" style="text-decoration:none">abrir print ↗</a></div>'+
+        '<div class="lido"><b>O que o OCR leu</b><div class="txt">'+(p.lido || '—')+'</div></div>'+
+        '<div class="acts">'+
+          '<button class="val" data-proto="'+p.proto+'" data-novo="Validado">✓ Validar</button>'+
+          '<button class="rej" data-proto="'+p.proto+'" data-novo="Rejeitado">✕ Rejeitar</button>'+
+        '</div>'+
+      '</div>';
+    box.appendChild(c);
+  });
+
+  box.querySelectorAll('.acts button').forEach(b=>{
+    b.addEventListener('click', ()=> decide(b.dataset.proto, b.dataset.novo, b));
+  });
+}
+
+/* ---- validar / rejeitar ---- */
+function decide(proto, novo, btn){
+  const card = btn.closest('.card');
+  card.classList.add('saindo');
+  card.querySelectorAll('button').forEach(x=>x.disabled=true);
+  fetch(BASE_URL + '?tipo=validar&pin=' + encodeURIComponent(PIN) +
+        '&proto=' + encodeURIComponent(proto) + '&novo=' + novo)
+    .then(r=>r.json())
+    .then(res=>{
+      if(res && res.ok){
+        pendentes = pendentes.filter(p=>p.proto!==proto);
+        card.remove();
+        render();
+        toast(novo==='Validado' ? 'Validado ✓ (entrou na corrida)' : 'Rejeitado ✕');
+      } else { throw new Error(); }
+    })
+    .catch(()=>{ card.classList.remove('saindo'); card.querySelectorAll('button').forEach(x=>x.disabled=false);
+      toast('Não consegui atualizar. Tente de novo.'); });
+}
+
+el('refresh').addEventListener('click', ()=> carrega(false));
+el('fSup').addEventListener('change', render);
+
+let toastT;
+function toast(m){ const t=el('toast'); t.textContent=m; t.style.display='block';
+  clearTimeout(toastT); toastT=setTimeout(()=>t.style.display='none', 2800); }
+</script>
+</body>
+</html>
