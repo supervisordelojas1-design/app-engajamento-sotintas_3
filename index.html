@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Corrida do Engajamento · Só Tintas</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;800&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;800;900&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
     --navy:#1F3864; --red:#C00000; --paper:#F4F6FA; --card:#FFFFFF;
@@ -14,7 +14,6 @@
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html{-webkit-text-size-adjust:100%}
-  /* escrita padronizada em negrito */
   body{font-family:'Inter',system-ui,sans-serif;background:var(--paper);color:var(--ink);
        font-size:15px;line-height:1.45;padding-bottom:120px;font-weight:600}
 
@@ -26,7 +25,7 @@
 
   main{max-width:860px;margin:0 auto;padding:16px}
   .hint{background:#FFF7DE;border:1px solid #F0DFA0;border-left:4px solid var(--red);
-        border-radius:8px;padding:11px 12px;font-size:13px;margin-bottom:16px;font-weight:700}
+        border-radius:8px;padding:11px 12px;font-size:13px;margin-bottom:14px;font-weight:700}
   .hint b{font-family:'Archivo',sans-serif;color:var(--navy)}
 
   fieldset{border:1px solid var(--line);background:var(--card);border-radius:12px;padding:14px;margin-bottom:14px}
@@ -34,7 +33,6 @@
          text-transform:uppercase;color:var(--navy);padding:0 8px;background:var(--card);
          border:1px solid var(--line);border-radius:6px}
   .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px 12px}
-  label.f{display:block}
   label.f span{display:block;font-size:11.5px;font-weight:700;color:var(--muted);
              margin-bottom:3px;text-transform:uppercase;letter-spacing:.3px}
   input[type=text],select{width:100%;padding:10px;border:1.5px solid var(--line);
@@ -42,7 +40,6 @@
   input::placeholder{color:#B8BFCD;font-weight:600}
   input:focus,select:focus{outline:3px solid rgba(31,56,100,.25);border-color:var(--navy)}
 
-  /* barra "enviando como" (identidade lembrada) */
   .euBar{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--navy);
          color:#fff;border-radius:12px;padding:12px 14px;margin-bottom:14px}
   .euBar .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.5px;opacity:.85;font-weight:700}
@@ -50,74 +47,67 @@
   .euBar button{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.4);color:#fff;
         border-radius:8px;padding:8px 12px;font:inherit;font-weight:800;cursor:pointer;white-space:nowrap}
 
-  .drop{border:2px dashed var(--navy);border-radius:12px;padding:26px 14px;text-align:center;
-        background:#F7F9FD;cursor:pointer;transition:.15s}
+  /* placar sessão + total */
+  .placar{display:flex;gap:10px;margin-bottom:14px}
+  .placar .box{flex:1;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;text-align:center}
+  .placar .box.tot{background:var(--navy);border-color:var(--navy)}
+  .placar span{display:block;font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:700}
+  .placar .box.tot span{color:#B9C6E0}
+  .placar b{font-family:'Archivo',sans-serif;font-size:28px;color:var(--navy)}
+  .placar .box.tot b{color:#fff}
+
+  /* etapas (stepper) */
+  .steps{display:grid;gap:8px;margin-bottom:14px}
+  .step{display:flex;gap:12px;align-items:center;background:var(--card);border:1.5px solid var(--line);
+        border-radius:12px;padding:11px 13px;opacity:.55}
+  .step.atual{opacity:1;border-color:var(--navy);box-shadow:0 0 0 3px rgba(31,56,100,.12)}
+  .step.feito{opacity:1;border-color:var(--ok);background:var(--ok-bg)}
+  .step .mk{flex:0 0 auto;width:30px;height:30px;border-radius:50%;border:2px solid var(--line);
+        display:grid;place-content:center;font-family:'Archivo',sans-serif;font-weight:800;color:var(--muted);font-size:14px}
+  .step.atual .mk{border-color:var(--navy);color:var(--navy)}
+  .step.feito .mk{background:var(--ok);border-color:var(--ok);color:#fff}
+  .step .t{flex:1;font-weight:800;color:var(--navy);font-size:14px}
+  .step.feito .t{color:var(--ok)}
+  .step .p{font-family:'Archivo',sans-serif;font-weight:800;color:var(--muted);font-size:12px}
+  .step.feito .p{color:var(--ok)}
+
+  #etapaCard .titulo{font-family:'Archivo',sans-serif;font-weight:800;color:var(--navy);font-size:16px;margin-bottom:2px}
+  #etapaCard .dica{color:var(--muted);font-size:12.5px;margin-bottom:12px;font-weight:700}
+  .drop{border:2px dashed var(--navy);border-radius:12px;padding:24px 14px;text-align:center;background:#F7F9FD;cursor:pointer;transition:.15s}
   .drop:hover{background:#EEF3FB}
-  .drop .ic{font-size:32px}
-  .drop b{display:block;font-family:'Archivo',sans-serif;color:var(--navy);margin-top:4px;font-size:16px}
+  .drop .ic{font-size:30px}
+  .drop b{display:block;font-family:'Archivo',sans-serif;color:var(--navy);margin-top:4px}
   .drop small{color:var(--muted);font-size:12px;font-weight:700}
   #preview{margin-top:12px;display:none}
   #preview img{max-width:100%;border-radius:10px;border:1px solid var(--line)}
   #preview .meta{font-size:12px;color:var(--ok);font-weight:800;margin-top:6px}
 
-  /* seletor de ação (fallback / manual) */
-  #pickerBox{display:none;margin-top:14px}
-  #pickerTitle{font-weight:800;color:var(--navy);margin-bottom:8px;font-size:14px}
-  .acoes{display:grid;gap:10px}
-  .acao{display:flex;gap:12px;align-items:center;background:#FBFCFE;border:1.5px solid var(--line);
-        border-radius:12px;padding:12px 14px;cursor:pointer;transition:.15s}
-  .acao:hover{border-color:var(--navy)}
-  .acao .pts{flex:0 0 auto;width:50px;height:50px;border-radius:12px;background:var(--navy);color:#fff;
-        display:grid;place-content:center;text-align:center;line-height:1;font-family:'Archivo',sans-serif}
-  .acao .pts b{font-size:20px;font-weight:800} .acao .pts small{font-size:9px;letter-spacing:.5px}
-  .acao .d b{display:block;font-weight:800;color:var(--navy);font-size:14px}
-  .acao .d small{color:var(--muted);font-size:12px;font-weight:700}
-  .verAcoes{margin-top:10px;text-align:center}
-  .verAcoes button{background:none;border:0;color:var(--navy);font:inherit;font-weight:800;
-        text-decoration:underline;cursor:pointer;font-size:13px}
+  /* conclusão + bônus */
+  #completo{display:none;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px;text-align:center;margin-bottom:14px}
+  #completo .par{font-family:'Archivo',sans-serif;font-weight:900;color:var(--ok);font-size:22px}
+  #completo p{color:var(--muted);font-weight:700;margin:6px 0 14px}
+  .bonusBtns{display:grid;gap:8px}
+  .bonusBtns button{background:#FBFCFE;border:1.5px solid var(--line);border-radius:10px;padding:12px;
+        font:inherit;font-weight:800;color:var(--navy);cursor:pointer}
+  .bonusBtns button:hover{border-color:var(--navy)}
 
   .send{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);
         padding:12px 16px;box-shadow:0 -6px 18px rgba(31,56,100,.08)}
   .send .wrap{display:flex;gap:10px;align-items:center}
   button#enviar{flex:1;background:var(--red);color:#fff;border:0;border-radius:10px;padding:15px;
-        font-family:'Archivo',sans-serif;font-weight:800;font-size:16px;letter-spacing:.5px;
-        text-transform:uppercase;cursor:pointer}
+        font-family:'Archivo',sans-serif;font-weight:800;font-size:16px;letter-spacing:.5px;text-transform:uppercase;cursor:pointer}
   button#enviar:disabled{background:#C9CFDA;cursor:not-allowed}
 
-  .toast{position:fixed;left:16px;right:16px;bottom:88px;background:var(--no);color:#fff;
-         padding:13px 14px;border-radius:10px;font-weight:700;font-size:13.5px;display:none;z-index:9;
-         box-shadow:0 8px 24px rgba(0,0,0,.18)}
+  .toast{position:fixed;left:16px;right:16px;bottom:88px;background:var(--ok);color:#fff;
+         padding:13px 14px;border-radius:10px;font-weight:800;font-size:14px;display:none;z-index:9;
+         text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.18)}
+  .toast.erro{background:var(--no)}
 
-  .sucesso{display:none;text-align:center;padding:28px 18px}
-  .sucesso .check{width:76px;height:76px;border-radius:50%;background:var(--ok-bg);color:var(--ok);
-        font-size:44px;line-height:76px;margin:0 auto 12px;font-weight:800}
-  .sucesso h2{font-family:'Archivo',sans-serif;color:var(--navy);text-transform:uppercase;font-size:20px}
-  .sucesso .ganhou{font-family:'Archivo',sans-serif;color:var(--red);font-size:30px;margin:6px 0}
-  .sucesso p{color:var(--muted);font-weight:700}
-  .sucesso .proto{display:inline-block;margin-top:12px;background:var(--navy);color:#fff;
-        font-family:'Archivo',sans-serif;letter-spacing:1px;padding:7px 15px;border-radius:999px;font-size:13px}
-  .sucesso button{margin-top:20px;background:var(--navy);border:0;color:#fff;
-        border-radius:10px;padding:13px 22px;font-weight:800;cursor:pointer;font-family:'Archivo',sans-serif}
-
-  /* capa da campanha */
+  /* capa */
   #capa{position:fixed;inset:0;z-index:100;background:var(--navy);display:flex;flex-direction:column}
   #capa img{width:100%;flex:1;min-height:0;object-fit:contain}
   #capa button{margin:0 16px 26px;background:var(--red);color:#fff;border:0;border-radius:12px;padding:16px;
-        font-family:'Archivo',sans-serif;font-weight:800;font-size:17px;letter-spacing:.5px;
-        text-transform:uppercase;cursor:pointer}
-
-  /* checklist da jornada (fica verde quando cumprido) */
-  .jornada{display:grid;gap:8px}
-  .jItem{display:flex;align-items:center;gap:10px;border:1.5px solid var(--line);border-radius:10px;
-         padding:10px 12px;background:#FBFCFE;transition:.2s}
-  .jItem.ok{border-color:var(--ok);background:var(--ok-bg)}
-  .jMark{flex:0 0 auto;width:26px;height:26px;border-radius:50%;border:2px solid var(--line);
-         display:grid;place-content:center;font-weight:800;color:#fff;font-size:15px}
-  .jItem.ok .jMark{background:var(--ok);border-color:var(--ok)}
-  .jTxt{font-weight:800;color:var(--navy);font-size:13.5px}
-  .jItem.ok .jTxt{color:var(--ok)}
-  .jPts{margin-left:auto;font-family:'Archivo',sans-serif;font-weight:800;color:var(--muted);font-size:12px}
-  .jItem.ok .jPts{color:var(--ok)}
+        font-family:'Archivo',sans-serif;font-weight:800;font-size:17px;letter-spacing:.5px;text-transform:uppercase;cursor:pointer}
 </style>
 </head>
 <body>
@@ -129,14 +119,13 @@
 
 <header><div class="wrap">
   <h1>Corrida do Engajamento</h1>
-  <p>Mande o print da sua ação e pontue · Só Tintas</p>
+  <p>Cumpra as etapas na ordem e pontue · Só Tintas</p>
 </div></header>
 
 <main class="wrap" id="form">
   <div class="hint">
-    <b>Como pontuar:</b> mande o print da ação que você fez — o sistema <b>identifica sozinho</b>
-    e conta os pontos. Mande a <b>tela inteira, nítida e sem cortes</b>. Se ele ficar na dúvida,
-    é só tocar na ação.
+    <b>Como funciona:</b> faça a ação da <b>etapa atual</b>, mande o print e o app confirma —
+    a etapa fica <b>verde</b> e libera a próxima. Mande a tela inteira, nítida e sem cortes.
   </div>
 
   <div class="euBar" id="euBar" style="display:none">
@@ -147,48 +136,39 @@
   <fieldset id="cadastro">
     <legend>Autenticação</legend>
     <div class="grid">
-      <label class="f"><span>Nome completo</span>
-        <input type="text" id="nome" placeholder="Seu nome" autocomplete="name"></label>
-      <label class="f"><span>Login Autcom</span>
-        <input type="text" id="login" placeholder="Seu login Autcom"></label>
-      <label class="f"><span>@ do Instagram</span>
-        <input type="text" id="insta" placeholder="@seuperfil"></label>
-      <label class="f"><span>Filial</span>
-        <select id="loja"><option value="">Selecione…</option></select></label>
+      <label class="f"><span>Nome completo</span><input type="text" id="nome" placeholder="Seu nome" autocomplete="name"></label>
+      <label class="f"><span>Login Autcom</span><input type="text" id="login" placeholder="Seu login Autcom"></label>
+      <label class="f"><span>@ do Instagram</span><input type="text" id="insta" placeholder="@seuperfil"></label>
+      <label class="f"><span>Filial</span><select id="loja"><option value="">Selecione…</option></select></label>
     </div>
   </fieldset>
 
-  <fieldset>
-    <legend>Print da sua ação</legend>
+  <div class="placar">
+    <div class="box"><span>Nesta sessão</span><b id="ptSessao">0</b></div>
+    <div class="box tot"><span>Seu total</span><b id="ptTotal">0</b></div>
+  </div>
+
+  <div class="steps" id="steps"></div>
+
+  <fieldset id="etapaCard">
+    <legend>Etapa atual</legend>
+    <div class="titulo" id="etapaTitulo">—</div>
+    <div class="dica" id="etapaDica">—</div>
     <div class="drop" id="drop">
       <div class="ic">📸</div>
       <b>Toque para enviar o print</b>
-      <small id="dropHint">tela inteira, nítida — o sistema lê e identifica a ação</small>
+      <small>tela inteira, nítida e sem cortes</small>
     </div>
     <input type="file" id="arquivo" accept="image/*" hidden>
     <div id="preview"><img id="prevImg" alt="prévia"><div class="meta" id="prevMeta"></div></div>
-
-    <div id="pickerBox">
-      <div id="pickerTitle">Toque na ação que você fez:</div>
-      <div class="acoes" id="acoes"></div>
-    </div>
-    <div class="verAcoes"><button id="verAcoes">ver ações e pontos</button></div>
   </fieldset>
 
-  <fieldset>
-    <legend>Minha jornada</legend>
-    <div class="jornada" id="jornada"></div>
-  </fieldset>
+  <div id="completo">
+    <div class="par">🎉 Jornada completa!</div>
+    <p>Você cumpriu todas as etapas. Quer pontuar mais? Estas ações valem pontos extras:</p>
+    <div class="bonusBtns" id="bonusBtns"></div>
+  </div>
 </main>
-
-<div class="sucesso wrap" id="sucesso">
-  <div class="check">✓</div>
-  <h2 id="sucTitulo">Enviado!</h2>
-  <div class="ganhou" id="ganhou">+5 pontos</div>
-  <p id="sucMsg">Entrou como <b>pendente</b> e vai contar na corrida assim que o gestor validar o print.</p>
-  <div class="proto" id="proto"></div>
-  <br><button id="novo">Enviar outra ação</button>
-</div>
 
 <div class="send" id="barra"><div class="wrap">
   <button id="enviar" disabled>Enviar print</button>
@@ -202,15 +182,17 @@ const ENVIO_URL = 'https://script.google.com/macros/s/AKfycbxcRz9eNZIfoALos0BbHe
 const MAX_DIM   = 1400;
 const JPEG_Q    = 0.82;
 const CHAVE     = 'seng_id';
+const FEITOS    = 'seng_feitos';
 
-const ACOES = [
-  { cod:'direct_contato', pts:5, titulo:'Compartilhei o vídeo no direct', sub:'não vale contato repetido' },
-  { cod:'comentario_5', pts:5, titulo:'Comentei marcando 5 @', sub:'não vale marcação repetida' },
-  { cod:'video_externo', pts:5, titulo:'Compartilhei o vídeo externo', sub:'WhatsApp ou direct' },
-  { cod:'curtida', pts:1, titulo:'Curti o vídeo oficial', sub:'@sotintasnet' },
-  { cod:'seguir', pts:1, titulo:'Sigo a página oficial', sub:'@sotintasnet' }
+const STEPS = [
+  { cod:'seguir',        pts:1, titulo:'Siga a página @sotintasnet', dica:'print do perfil mostrando "Seguindo"' },
+  { cod:'curtida',       pts:1, titulo:'Curta o vídeo oficial',      dica:'print do vídeo oficial curtido' },
+  { cod:'comentario_5',  pts:5, titulo:'Comente marcando 5 amigos',  dica:'print do seu comentário com os 5 @ marcados' },
+  { cod:'direct_contato',pts:5, titulo:'Compartilhe o vídeo no direct', dica:'print do direct mostrando o vídeo enviado' },
+  { cod:'video_externo', pts:5, titulo:'Compartilhe o vídeo externo', dica:'print do WhatsApp ou direct' }
 ];
-const LABEL = {}; ACOES.forEach(a=>LABEL[a.cod]=a.titulo);
+const REPETIVEIS = { direct_contato:'Mais um direct', comentario_5:'Mais um comentário', video_externo:'Mais um externo' };
+const PTS = {}; STEPS.forEach(s=>PTS[s.cod]=s.pts);
 
 const SUPERVISOR = {
   BRUNO:['002','004','006','007','010','013','015','022','023'], TALITA:['017','018','021','024','025','036'],
@@ -219,159 +201,143 @@ const SUPERVISOR = {
 const LOJA_SUP = {}; for(const s in SUPERVISOR) SUPERVISOR[s].forEach(f=>LOJA_SUP[f]=s);
 
 const el = id => document.getElementById(id);
-let imgBase64 = '', acaoManual = null;
+function rotuloFilial(l){ return /^\d+$/.test(String(l)) ? ('Loja '+l) : String(l); }
+let imgBase64='', bonusCod=null, sessionPts=0, totalPts=0, current=0;
 
 /* ---- filiais ---- */
 (function(){ const sel=el('loja');
-  Object.keys(LOJA_SUP).sort().forEach(l=>{
-    const o=document.createElement('option'); o.value=l; o.textContent='Loja '+l; sel.appendChild(o); });
-  ['Administrativo','Centro de Distribuição','Logística','Cliente'].forEach(u=>{
-    const o=document.createElement('option'); o.value=u; o.textContent=u; sel.appendChild(o); });
+  Object.keys(LOJA_SUP).sort().forEach(l=>{ const o=document.createElement('option'); o.value=l; o.textContent='Loja '+l; sel.appendChild(o); });
+  ['Administrativo','Centro de Distribuição','Logística','Cliente'].forEach(u=>{ const o=document.createElement('option'); o.value=u; o.textContent=u; sel.appendChild(o); });
 })();
-function rotuloFilial(l){ return /^\d+$/.test(String(l)) ? ('Loja '+l) : String(l); }
 el('loja').addEventListener('change', ()=>{ salvaId(); revalida(); });
 ['nome','login','insta'].forEach(id=> el(id).addEventListener('input', ()=>{ salvaId(); revalida(); }));
 
-/* ---- cartões de ação (fallback/manual) ---- */
-(function(){ const box=el('acoes'); ACOES.forEach(a=>{
-  const div=document.createElement('div'); div.className='acao';
-  div.innerHTML='<div class="pts"><b>'+a.pts+'</b><small>PTS</small></div>'+
-                '<div class="d"><b>'+a.titulo+'</b><small>'+a.sub+'</small></div>';
-  div.addEventListener('click', ()=>{ acaoManual=a.cod; if(imgBase64) enviar(); else toast('Anexe o print primeiro.'); });
-  box.appendChild(div); }); })();
-el('verAcoes').addEventListener('click', ()=>{
-  const b=el('pickerBox'); const on = b.style.display!=='block';
-  b.style.display = on?'block':'none';
-  el('pickerTitle').textContent = 'Ações e pontos (toque para escolher a ação):';
-});
-
 /* ---- identidade lembrada ---- */
-function getId(){ try{ return JSON.parse(localStorage.getItem(CHAVE)) || null; }catch(e){ return null; } }
-function salvaId(){
-  const d={ nome:el('nome').value.trim(), login:el('login').value.trim(),
-            insta:el('insta').value.trim(), loja:el('loja').value };
-  if(d.nome && d.login && d.insta && d.loja){ try{ localStorage.setItem(CHAVE, JSON.stringify(d)); }catch(e){} }
-}
-function aplicaId(d){
-  el('nome').value=d.nome; el('login').value=d.login; el('insta').value=d.insta; el('loja').value=d.loja;
-  el('euNome').textContent = d.nome + ' · ' + d.insta + ' · ' + rotuloFilial(d.loja);
-  el('euBar').style.display='flex'; el('cadastro').style.display='none';
-}
-el('trocar').addEventListener('click', ()=>{
-  el('euBar').style.display='none'; el('cadastro').style.display='block'; revalida();
-});
-(function(){ const d=getId(); if(d && d.nome && d.login && d.insta && d.loja) aplicaId(d); })();
+function getId(){ try{ return JSON.parse(localStorage.getItem(CHAVE))||null; }catch(e){ return null; } }
+function salvaId(){ const d={ nome:el('nome').value.trim(), login:el('login').value.trim(), insta:el('insta').value.trim(), loja:el('loja').value };
+  if(d.nome&&d.login&&d.insta&&d.loja){ try{ localStorage.setItem(CHAVE,JSON.stringify(d)); }catch(e){} } }
+function aplicaId(d){ el('nome').value=d.nome; el('login').value=d.login; el('insta').value=d.insta; el('loja').value=d.loja;
+  el('euNome').textContent = d.nome+' · '+d.insta+' · '+rotuloFilial(d.loja);
+  el('euBar').style.display='flex'; el('cadastro').style.display='none'; }
+el('trocar').addEventListener('click', ()=>{ el('euBar').style.display='none'; el('cadastro').style.display='block'; revalida(); });
 
-/* ---- capa da campanha ---- */
-el('entrarCapa').addEventListener('click', ()=>{ el('capa').style.display='none'; });
-
-/* ---- checklist da jornada (verde quando cumprido) ---- */
-const FEITOS='seng_feitos';
+/* ---- etapas ---- */
 function getFeitos(){ try{ return JSON.parse(localStorage.getItem(FEITOS))||[]; }catch(e){ return []; } }
-function marcaFeito(cod){ const f=getFeitos();
-  if(cod && f.indexOf(cod)<0){ f.push(cod); try{ localStorage.setItem(FEITOS, JSON.stringify(f)); }catch(e){} }
-  renderJornada(); }
-function renderJornada(){ const f=getFeitos(); const box=el('jornada'); box.innerHTML='';
-  ACOES.forEach(a=>{ const ok=f.indexOf(a.cod)>=0; const div=document.createElement('div');
-    div.className='jItem'+(ok?' ok':'');
-    div.innerHTML='<div class="jMark">'+(ok?'✓':'')+'</div><div class="jTxt">'+a.titulo+'</div><div class="jPts">+'+a.pts+'</div>';
-    box.appendChild(div); }); }
-renderJornada();
+function marcaFeito(cod){ const f=getFeitos(); if(cod && f.indexOf(cod)<0){ f.push(cod); try{ localStorage.setItem(FEITOS,JSON.stringify(f)); }catch(e){} } }
+function calcCurrent(){ const f=getFeitos(); for(let i=0;i<STEPS.length;i++){ if(f.indexOf(STEPS[i].cod)<0) return i; } return -1; }
+function acaoAtual(){ return bonusCod || (current>=0 ? STEPS[current].cod : null); }
+
+function render(){
+  el('ptSessao').textContent = sessionPts;
+  el('ptTotal').textContent  = totalPts;
+  const f=getFeitos();
+  const box=el('steps'); box.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const feito = f.indexOf(s.cod)>=0;
+    const atual = (!bonusCod && i===current);
+    const div=document.createElement('div');
+    div.className='step'+(feito?' feito':(atual?' atual':''));
+    div.innerHTML='<div class="mk">'+(feito?'✓':(i+1))+'</div><div class="t">'+s.titulo+'</div><div class="p">+'+s.pts+'</div>';
+    box.appendChild(div);
+  });
+
+  const acao = acaoAtual();
+  if(acao){
+    const info = bonusCod ? STEPS.find(x=>x.cod===bonusCod) : STEPS[current];
+    el('etapaCard').style.display='block';
+    el('etapaCard').querySelector('legend').textContent = bonusCod ? 'Pontuar mais' : ('Etapa '+(current+1)+' de '+STEPS.length);
+    el('etapaTitulo').textContent = info.titulo + '  (+'+info.pts+' pts)';
+    el('etapaDica').textContent = info.dica;
+    el('completo').style.display='none';
+    el('barra').style.display='block';
+  } else {
+    el('etapaCard').style.display='none';
+    el('barra').style.display='none';
+    el('completo').style.display='block';
+    const bb=el('bonusBtns'); bb.innerHTML='';
+    Object.keys(REPETIVEIS).forEach(cod=>{ const b=document.createElement('button');
+      b.textContent=REPETIVEIS[cod]+' (+'+PTS[cod]+')';
+      b.addEventListener('click', ()=>{ bonusCod=cod; imgBase64=''; el('preview').style.display='none'; render(); revalida(); window.scrollTo(0,document.body.scrollHeight); });
+      bb.appendChild(b); });
+  }
+  revalida();
+}
 
 /* ---- upload + compressão ---- */
 el('drop').addEventListener('click', ()=> el('arquivo').click());
 el('arquivo').addEventListener('change', e=>{
   const file=e.target.files[0]; if(!file) return;
-  if(!file.type.startsWith('image/')){ toast('Envie uma imagem (print).'); return; }
-  comprimir(file, dataUrl=>{
-    imgBase64 = dataUrl.split(',')[1] || '';
-    el('prevImg').src=dataUrl;
-    el('prevMeta').textContent='Print pronto · ~'+Math.round((imgBase64.length*3/4)/1024)+' KB';
-    el('preview').style.display='block'; revalida();
-  });
+  if(!file.type.startsWith('image/')){ toast('Envie uma imagem (print).',true); return; }
+  comprimir(file, dataUrl=>{ imgBase64=dataUrl.split(',')[1]||'';
+    el('prevImg').src=dataUrl; el('prevMeta').textContent='Print pronto · ~'+Math.round((imgBase64.length*3/4)/1024)+' KB';
+    el('preview').style.display='block'; revalida(); });
 });
-function comprimir(file, cb){
-  const reader=new FileReader();
+function comprimir(file, cb){ const reader=new FileReader();
   reader.onload=ev=>{ const img=new Image();
     img.onload=()=>{ let w=img.width,h=img.height;
       if(w>h&&w>MAX_DIM){h=Math.round(h*MAX_DIM/w);w=MAX_DIM;} else if(h>=w&&h>MAX_DIM){w=Math.round(w*MAX_DIM/h);h=MAX_DIM;}
-      const cv=document.createElement('canvas'); cv.width=w; cv.height=h;
-      cv.getContext('2d').drawImage(img,0,0,w,h); cb(cv.toDataURL('image/jpeg',JPEG_Q)); };
-    img.onerror=()=>toast('Não consegui ler essa imagem. Tente outro print.');
-    img.src=ev.target.result; };
-  reader.readAsDataURL(file);
-}
+      const cv=document.createElement('canvas'); cv.width=w; cv.height=h; cv.getContext('2d').drawImage(img,0,0,w,h);
+      cb(cv.toDataURL('image/jpeg',JPEG_Q)); };
+    img.onerror=()=>toast('Não consegui ler essa imagem. Tente outro print.',true); img.src=ev.target.result; };
+  reader.readAsDataURL(file); }
 
-/* ---- validação ---- */
-function idCompleta(){ return el('nome').value.trim().length>2 && el('login').value.trim().length>0 &&
-                              el('insta').value.trim().length>1 && el('loja').value; }
-function valido(){ return idCompleta() && imgBase64; }
-function revalida(){ el('enviar').disabled = !valido(); }
+/* ---- validação do botão ---- */
+function idCompleta(){ return el('nome').value.trim().length>2 && el('login').value.trim().length>0 && el('insta').value.trim().length>1 && el('loja').value; }
+function revalida(){ el('enviar').disabled = !(idCompleta() && imgBase64 && acaoAtual()); }
 
 /* ---- toast ---- */
 let toastT;
-function toast(m){ const t=el('toast'); t.textContent=m; t.style.display='block';
-  clearTimeout(toastT); toastT=setTimeout(()=>t.style.display='none',5000); }
+function toast(m, erro){ const t=el('toast'); t.textContent=m; t.className='toast'+(erro?' erro':''); t.style.display='block';
+  clearTimeout(toastT); toastT=setTimeout(()=>t.style.display='none', 4500); }
 
 /* ---- envio ---- */
-el('enviar').addEventListener('click', ()=> enviar());
+el('enviar').addEventListener('click', enviar);
 function enviar(){
-  if(!valido()){ toast('Preencha seus dados e anexe o print.'); return; }
-  const b=el('enviar'); b.disabled=true; b.textContent='Lendo seu print…';
-  salvaId();
+  const acao = acaoAtual();
+  if(!idCompleta() || !imgBase64 || !acao){ toast('Preencha seus dados e anexe o print.',true); return; }
+  const b=el('enviar'); b.disabled=true; b.textContent='Lendo seu print…'; salvaId();
   const loja=el('loja').value;
   const payload={ nome:el('nome').value.trim(), login:el('login').value.trim(), insta:el('insta').value.trim(),
-    loja:loja, supervisor:LOJA_SUP[loja]||'', acao:(acaoManual||'auto'),
-    imgBase64:imgBase64, imgTipo:'image/jpeg',
-    arquivo:(el('insta').value.trim()||'print').replace(/[^a-zA-Z0-9]/g,'')+'-'+Date.now() };
+    loja:loja, supervisor:LOJA_SUP[loja]||'', acao:acao, imgBase64:imgBase64, imgTipo:'image/jpeg',
+    arquivo:(el('insta').value.trim()||'print').replace(/[^a-zA-Z0-9]/g,'')+'-'+acao+'-'+Date.now() };
 
   fetch(ENVIO_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)})
     .then(r=>r.json())
     .then(res=>{
-      if(!res||!res.ok){ throw new Error(res&&res.erro?res.erro:'falha'); }
+      b.textContent='Enviar print';
+      if(!res||!res.ok){ throw new Error(); }
+      if(res.ilegivel){ toast(res.motivo||'Print ilegível. Reenvie mais nítido.',true);
+        imgBase64=''; el('preview').style.display='none'; b.disabled=false; return; }
 
-      if(res.ilegivel){
-        toast(res.motivo || 'Não consegui ler seu print. Reenvie a tela inteira, nítida e sem cortes.');
-        imgBase64=''; el('preview').style.display='none'; acaoManual=null;
-        b.disabled=false; b.textContent='Enviar print'; revalida(); return;
-      }
-      if(res.precisaAcao){
-        toast(res.motivo || 'Toque na ação que você fez.');
-        el('pickerBox').style.display='block'; el('pickerTitle').textContent='Toque na ação que você fez:';
-        el('pickerBox').scrollIntoView({behavior:'smooth'});
-        b.disabled=false; b.textContent='Enviar print'; return;
-      }
+      // recebeu: marca a etapa como cumprida e avança
+      if(!bonusCod) marcaFeito(acao);
+      if(res.status==='Validado' && res.pontos){ sessionPts += res.pontos; }
+      if(res.total!=null) totalPts = res.total;
 
-      const h2=el('sucTitulo'), p=el('sucMsg');
-      if(res.duplicado){
-        el('ganhou').textContent='Já registrado'; el('ganhou').style.color='var(--gold)';
-        h2.textContent='Isso já pontuou antes'; p.innerHTML=res.motivo||'Esses dados já vieram antes — mande algo <b>novo</b>.';
-      } else {
-        const nome = LABEL[res.acao] || 'Ação';
-        el('ganhou').textContent='+'+(res.pontos!=null?res.pontos:'')+' pontos'; el('ganhou').style.color='';
-        h2.textContent='Enviado!';
-        p.innerHTML='Identificamos: <b>'+nome+'</b>. Entrou como <b>pendente</b> e conta na corrida quando o gestor validar.';
-        marcaFeito(res.acao);
-      }
-      el('proto').textContent=res.protocolo||'';
-      el('form').style.display='none'; el('barra').style.display='none';
-      el('sucesso').style.display='block'; window.scrollTo(0,0);
+      if(res.duplicado){ toast('Isso já tinha pontuado — etapa concluída.'); }
+      else if(res.status==='Validado'){ toast('+'+res.pontos+' pts · etapa concluída ✓'); }
+      else { toast('Print recebido ✓ · vai contar após a validação'); }
+
+      imgBase64=''; el('preview').style.display='none'; bonusCod=null;
+      current=calcCurrent(); render(); window.scrollTo(0,0);
     })
-    .catch(()=>{ toast('Não consegui enviar agora. Confira a internet e tente de novo.');
+    .catch(()=>{ toast('Não consegui enviar agora. Confira a internet e tente de novo.',true);
       b.disabled=false; b.textContent='Enviar print'; revalida(); });
 }
 
-/* ---- enviar outra (mantém identidade) ---- */
-el('novo').addEventListener('click', ()=>{
-  imgBase64=''; acaoManual=null;
-  el('preview').style.display='none'; el('pickerBox').style.display='none';
-  el('sucesso').style.display='none'; el('form').style.display='block'; el('barra').style.display='block';
-  el('enviar').textContent='Enviar print';
-  const d=getId(); if(d) aplicaId(d);
-  revalida(); window.scrollTo(0,0);
-});
+/* ---- capa ---- */
+el('entrarCapa').addEventListener('click', ()=>{ el('capa').style.display='none'; });
 
-revalida();
+/* ---- inicialização ---- */
+(function(){
+  const d=getId();
+  if(d && d.nome && d.login && d.insta && d.loja){ aplicaId(d);
+    // busca o total já validado do colaborador
+    fetch(ENVIO_URL+'?tipo=meutotal&login='+encodeURIComponent(d.login))
+      .then(r=>r.json()).then(res=>{ if(res&&res.ok&&res.total!=null){ totalPts=res.total; el('ptTotal').textContent=totalPts; } }).catch(()=>{});
+  }
+  current=calcCurrent(); render();
+})();
 </script>
 </body>
 </html>
