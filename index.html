@@ -222,8 +222,13 @@ const el = id => document.getElementById(id);
 let imgBase64 = '', acaoManual = null;
 
 /* ---- filiais ---- */
-(function(){ const sel=el('loja'); Object.keys(LOJA_SUP).sort().forEach(l=>{
-  const o=document.createElement('option'); o.value=l; o.textContent='Loja '+l; sel.appendChild(o); }); })();
+(function(){ const sel=el('loja');
+  Object.keys(LOJA_SUP).sort().forEach(l=>{
+    const o=document.createElement('option'); o.value=l; o.textContent='Loja '+l; sel.appendChild(o); });
+  ['Administrativo','Centro de Distribuição','Logística','Cliente'].forEach(u=>{
+    const o=document.createElement('option'); o.value=u; o.textContent=u; sel.appendChild(o); });
+})();
+function rotuloFilial(l){ return /^\d+$/.test(String(l)) ? ('Loja '+l) : String(l); }
 el('loja').addEventListener('change', ()=>{ salvaId(); revalida(); });
 ['nome','login','insta'].forEach(id=> el(id).addEventListener('input', ()=>{ salvaId(); revalida(); }));
 
@@ -249,7 +254,7 @@ function salvaId(){
 }
 function aplicaId(d){
   el('nome').value=d.nome; el('login').value=d.login; el('insta').value=d.insta; el('loja').value=d.loja;
-  el('euNome').textContent = d.nome + ' · ' + d.insta + ' · Loja ' + d.loja;
+  el('euNome').textContent = d.nome + ' · ' + d.insta + ' · ' + rotuloFilial(d.loja);
   el('euBar').style.display='flex'; el('cadastro').style.display='none';
 }
 el('trocar').addEventListener('click', ()=>{
