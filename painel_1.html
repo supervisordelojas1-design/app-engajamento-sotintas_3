@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel de Corrida · Engajamento Só Tintas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;800;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#1F3864; --navy2:#16294A; --red:#C00000; --paper:#EEF2F8; --card:#FFFFFF;
+    --ink:#22304A; --muted:#6B7688; --line:#DDE3EE; --gold:#E0A500; --track:#E7ECF4;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--paper);color:var(--ink);padding-bottom:30px}
+  .wrap{max-width:1100px;margin:0 auto;padding:0 16px}
+
+  header{background:linear-gradient(180deg,var(--navy),var(--navy2));color:#fff;
+         padding:18px 0 16px;border-bottom:5px solid var(--red)}
+  header .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  header h1{font-family:'Archivo',sans-serif;font-weight:900;font-size:clamp(20px,3.2vw,30px);
+            letter-spacing:.4px;text-transform:uppercase;line-height:1}
+  header h1 small{display:block;font-family:'Inter';font-weight:600;font-size:12px;opacity:.8;
+            letter-spacing:.3px;text-transform:none;margin-top:4px}
+  .status{font-size:12px;opacity:.85;text-align:right}
+  .status b{color:#8FD3A6}
+
+  .toggle{display:flex;gap:6px;background:#fff;border:1px solid var(--line);border-radius:999px;
+          padding:4px;margin:16px auto 4px;width:max-content}
+  .toggle button{border:0;background:none;padding:9px 20px;border-radius:999px;font-weight:800;
+          font-family:'Archivo',sans-serif;letter-spacing:.4px;text-transform:uppercase;font-size:13px;
+          color:var(--muted);cursor:pointer}
+  .toggle button.on{background:var(--navy);color:#fff}
+
+  .resumo{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:14px 0 6px}
+  .kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 20px;text-align:center;min-width:120px}
+  .kpi b{display:block;font-size:11px;letter-spacing:.5px;color:var(--muted);text-transform:uppercase}
+  .kpi strong{font-family:'Archivo',sans-serif;font-size:26px;color:var(--navy)}
+
+  h2.sec{font-family:'Archivo',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.5px;
+         color:var(--navy);font-size:14px;margin:22px 0 12px;border-bottom:3px solid var(--red);
+         display:inline-block;padding-bottom:3px}
+
+  /* pista de corrida */
+  .lane{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;
+        margin-bottom:10px;display:grid;grid-template-columns:44px 1fr auto;gap:12px;align-items:center;
+        transition:transform .2s}
+  .lane.top1{border-color:var(--gold);box-shadow:0 4px 16px rgba(224,165,0,.18)}
+  .pos{font-family:'Archivo',sans-serif;font-weight:900;font-size:22px;color:var(--navy);text-align:center}
+  .top1 .pos{color:var(--gold)} .top2 .pos{color:#8593A8} .top3 .pos{color:#B0764A}
+  .medal{font-size:20px}
+  .runner{min-width:0}
+  .runner .who{display:flex;align-items:baseline;gap:8px;margin-bottom:7px}
+  .runner .who b{font-weight:800;color:var(--navy);font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .runner .who span{font-size:11.5px;color:var(--muted);white-space:nowrap}
+  .track{position:relative;height:16px;background:var(--track);border-radius:999px;overflow:hidden}
+  .fill{position:absolute;left:0;top:0;bottom:0;border-radius:999px;
+        background:linear-gradient(90deg,var(--navy),#3A5D9E);transition:width 1s cubic-bezier(.22,1,.36,1)}
+  .top1 .fill{background:linear-gradient(90deg,var(--red),#E85A2A)}
+  .drop{position:absolute;top:50%;transform:translate(-50%,-50%);font-size:16px;transition:left 1s cubic-bezier(.22,1,.36,1)}
+  .score{text-align:right}
+  .score strong{font-family:'Archivo',sans-serif;font-size:24px;color:var(--navy)}
+  .score b{display:block;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+  .top1 .score strong{color:var(--red)}
+
+  .demo{background:#FFF7DE;border:1px solid #F0DFA0;border-left:4px solid var(--red);border-radius:8px;
+        padding:9px 12px;font-size:12.5px;color:var(--navy);margin:16px 0 4px;text-align:center}
+  .foot{text-align:center;color:var(--muted);font-size:11.5px;margin-top:20px}
+</style>
+</head>
+<body>
+
+<header><div class="wrap">
+  <h1>Corrida do Engajamento<small>Ranking ao vivo · Campanha Só Tintas</small></h1>
+  <div class="status">Atualizado às <b id="hora">--:--</b><br>atualiza sozinho a cada 20s</div>
+</div></header>
+
+<div class="wrap">
+  <div id="avisoDemo" class="demo">Modo demonstração — dados de exemplo. Ao conectar a planilha (RANKING_URL), o painel passa a mostrar os pontos reais validados.</div>
+
+  <div class="toggle">
+    <button id="tbV" class="on">Vendedores</button>
+    <button id="tbL">Lojas</button>
+  </div>
+
+  <div class="resumo">
+    <div class="kpi"><b>Pontos validados</b><strong id="kTotal">0</strong></div>
+    <div class="kpi"><b>Participações</b><strong id="kPart">0</strong></div>
+    <div class="kpi"><b>Na corrida</b><strong id="kGente">0</strong></div>
+  </div>
+
+  <h2 class="sec" id="tituloSec">Top vendedores</h2>
+  <div id="pista"></div>
+
+  <div class="foot">Só pontos com print <b>validado</b> pelo gestor entram na corrida.</div>
+</div>
+
+<script>
+/* ================= CONFIGURAÇÃO ================= */
+const RANKING_URL = 'COLE_AQUI_A_URL_DO_APPS_SCRIPT';   // mesma URL /exec do Apps Script
+const REFRESH_MS  = 20000;
+const TOP_N       = 12;
+
+/* ================= DADOS DEMO (aparecem até conectar a planilha) ================= */
+const DEMO = {
+  total: 486, participacoes: 132,
+  vendedores: [
+    {nome:'Ana Beatriz',   insta:'@ana.paint',   loja:'006', sup:'BRUNO',  pontos:62},
+    {nome:'Carlos Menezes',insta:'@carlosmnz',   loja:'017', sup:'TALITA', pontos:55},
+    {nome:'Diego Rocha',   insta:'@diego.rocha', loja:'027', sup:'THIAGO', pontos:48},
+    {nome:'Priscila Alves',insta:'@pri.alves',   loja:'008', sup:'RAMON',  pontos:41},
+    {nome:'Rafael Souza',  insta:'@rafa.souza',  loja:'004', sup:'BRUNO',  pontos:37},
+    {nome:'Juliana Dias',  insta:'@ju.dias',     loja:'018', sup:'TALITA', pontos:33},
+    {nome:'Marcos Lima',   insta:'@marcoslima',  loja:'030', sup:'THIAGO', pontos:29},
+    {nome:'Beatriz Nunes', insta:'@bia.nunes',   loja:'009', sup:'RAMON',  pontos:24},
+    {nome:'Felipe Castro', insta:'@felipec',     loja:'010', sup:'BRUNO',  pontos:20},
+    {nome:'Larissa Melo',  insta:'@lari.melo',   loja:'024', sup:'TALITA', pontos:16}
+  ]
+};
+
+/* ================= ESTADO ================= */
+let modo = 'vendedores';
+const el = id => document.getElementById(id);
+const medalha = p => p===1?'🥇':p===2?'🥈':p===3?'🥉':'';
+const dropIcon = ['🎨','🖌️','🪣'];
+
+function agregaLojas(vs){
+  const m = {};
+  vs.forEach(v=>{
+    if(!m[v.loja]) m[v.loja] = {loja:v.loja, sup:v.sup, pontos:0, gente:0};
+    m[v.loja].pontos += v.pontos; m[v.loja].gente += 1;
+  });
+  return Object.values(m).sort((a,b)=>b.pontos-a.pontos);
+}
+
+function render(data){
+  const vs = (data.vendedores||[]).slice().sort((a,b)=>b.pontos-a.pontos);
+  const lojas = agregaLojas(vs);
+  const lista = (modo==='vendedores' ? vs : lojas).slice(0, TOP_N);
+  const max = Math.max(1, lista.length ? lista[0].pontos : 1);
+
+  el('kTotal').textContent = data.total!=null ? data.total : vs.reduce((s,v)=>s+v.pontos,0);
+  el('kPart').textContent  = data.participacoes!=null ? data.participacoes : '—';
+  el('kGente').textContent = (modo==='vendedores' ? vs.length : lojas.length);
+  el('tituloSec').textContent = modo==='vendedores' ? 'Top vendedores' : 'Corrida das lojas';
+
+  const pista = el('pista'); pista.innerHTML='';
+  lista.forEach((r,i)=>{
+    const pos = i+1, pct = Math.max(6, Math.round(r.pontos/max*100));
+    const nome = modo==='vendedores' ? r.nome : ('Loja '+r.loja);
+    const info = modo==='vendedores'
+        ? (r.insta+' · Loja '+r.loja)
+        : (r.sup+' · '+r.gente+' na disputa');
+    const div = document.createElement('div');
+    div.className = 'lane' + (pos<=3 ? ' top'+pos : '');
+    div.innerHTML =
+      '<div class="pos">'+(medalha(pos)?'<span class="medal">'+medalha(pos)+'</span>':pos)+'</div>'+
+      '<div class="runner"><div class="who"><b>'+nome+'</b><span>'+info+'</span></div>'+
+        '<div class="track"><div class="fill" style="width:'+pct+'%"></div>'+
+        '<div class="drop" style="left:'+pct+'%">'+dropIcon[i%3]+'</div></div></div>'+
+      '<div class="score"><strong>'+r.pontos+'</strong><b>pontos</b></div>';
+    pista.appendChild(div);
+  });
+
+  const agora = new Date();
+  el('hora').textContent = ('0'+agora.getHours()).slice(-2)+':'+('0'+agora.getMinutes()).slice(-2);
+}
+
+/* ---- busca dados reais; cai no demo se não houver ---- */
+function carrega(){
+  if(RANKING_URL.indexOf('script.google.com') === -1){ render(DEMO); return; }
+  fetch(RANKING_URL + '?tipo=ranking')
+    .then(r=>r.json())
+    .then(res=>{
+      if(res && res.ok && res.vendedores){
+        el('avisoDemo').style.display='none';
+        render(res);
+      } else { render(DEMO); }
+    })
+    .catch(()=> render(DEMO));
+}
+
+/* ---- toggle ---- */
+el('tbV').addEventListener('click', ()=>{ modo='vendedores'; el('tbV').classList.add('on'); el('tbL').classList.remove('on'); carrega(); });
+el('tbL').addEventListener('click', ()=>{ modo='lojas'; el('tbL').classList.add('on'); el('tbV').classList.remove('on'); carrega(); });
+
+carrega();
+setInterval(carrega, REFRESH_MS);
+</script>
+</body>
+</html>

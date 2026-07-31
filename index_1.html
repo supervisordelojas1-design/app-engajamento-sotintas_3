@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Corrida do Engajamento · Só Tintas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#1F3864; --red:#C00000; --paper:#F4F6FA; --card:#FFFFFF;
+    --ink:#22304A; --muted:#64748B; --line:#DDE3EE; --gold:#E0A500;
+    --ok:#1B7A3D; --ok-bg:#E4F4E9; --no:#B4232A; --no-bg:#FCE8E9;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--paper);color:var(--ink);
+       font-size:15px;line-height:1.45;padding-bottom:120px}
+
+  header{background:var(--navy);color:#fff;padding:20px 16px 16px;border-bottom:5px solid var(--red)}
+  .wrap{max-width:860px;margin:0 auto}
+  header h1{font-family:'Archivo',sans-serif;font-weight:800;font-size:clamp(19px,4.5vw,26px);
+            letter-spacing:.3px;text-transform:uppercase}
+  header p{opacity:.88;font-size:13px;margin-top:4px}
+
+  main{max-width:860px;margin:0 auto;padding:16px}
+  .hint{background:#FFF7DE;border:1px solid #F0DFA0;border-left:4px solid var(--red);
+        border-radius:8px;padding:11px 12px;font-size:13px;margin-bottom:16px}
+  .hint b{font-family:'Archivo',sans-serif;color:var(--navy)}
+
+  fieldset{border:1px solid var(--line);background:var(--card);border-radius:12px;
+           padding:14px;margin-bottom:14px}
+  legend{font-family:'Archivo',sans-serif;font-weight:800;font-size:13px;letter-spacing:.6px;
+         text-transform:uppercase;color:var(--navy);padding:0 8px;background:var(--card);
+         border:1px solid var(--line);border-radius:6px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px 12px}
+  label.f{display:block}
+  label.f span{display:block;font-size:11.5px;font-weight:600;color:var(--muted);
+             margin-bottom:3px;text-transform:uppercase;letter-spacing:.3px}
+  input[type=text],select{width:100%;padding:10px;border:1.5px solid var(--line);
+       border-radius:8px;font:inherit;font-weight:700;color:var(--navy);background:#FFFBEA}
+  input::placeholder{color:#B8BFCD;font-weight:400}
+  input:focus,select:focus{outline:3px solid rgba(31,56,100,.25);border-color:var(--navy)}
+
+  .acoes{display:grid;gap:10px}
+  .acao{display:flex;gap:12px;align-items:center;background:#FBFCFE;border:1.5px solid var(--line);
+        border-radius:12px;padding:12px 14px;cursor:pointer;transition:.15s}
+  .acao:hover{border-color:var(--navy)}
+  .acao.on{border-color:var(--navy);background:#EEF3FB;box-shadow:0 0 0 3px rgba(31,56,100,.12)}
+  .acao .pts{flex:0 0 auto;width:52px;height:52px;border-radius:12px;background:var(--navy);color:#fff;
+        display:grid;place-content:center;text-align:center;line-height:1;font-family:'Archivo',sans-serif}
+  .acao .pts b{font-size:20px;font-weight:800} .acao .pts small{font-size:9px;letter-spacing:.5px}
+  .acao.on .pts{background:var(--red)}
+  .acao .d b{display:block;font-weight:700;color:var(--navy);font-size:14px}
+  .acao .d small{color:var(--muted);font-size:12px}
+
+  .drop{border:2px dashed var(--navy);border-radius:12px;padding:20px 14px;text-align:center;
+        background:#F7F9FD;cursor:pointer;transition:.15s}
+  .drop:hover{background:#EEF3FB}
+  .drop .ic{font-size:28px}
+  .drop b{display:block;font-family:'Archivo',sans-serif;color:var(--navy);margin-top:4px}
+  .drop small{color:var(--muted);font-size:12px}
+  #preview{margin-top:12px;display:none}
+  #preview img{max-width:100%;border-radius:10px;border:1px solid var(--line)}
+  #preview .meta{font-size:12px;color:var(--ok);font-weight:700;margin-top:6px}
+
+  .send{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);
+        padding:12px 16px;box-shadow:0 -6px 18px rgba(31,56,100,.08)}
+  .send .wrap{display:flex;gap:10px;align-items:center}
+  button#enviar{flex:1;background:var(--red);color:#fff;border:0;border-radius:10px;padding:15px;
+        font-family:'Archivo',sans-serif;font-weight:800;font-size:16px;letter-spacing:.5px;
+        text-transform:uppercase;cursor:pointer}
+  button#enviar:disabled{background:#C9CFDA;cursor:not-allowed}
+
+  .toast{position:fixed;left:16px;right:16px;bottom:88px;background:var(--no);color:#fff;
+         padding:13px 14px;border-radius:10px;font-weight:600;font-size:13.5px;display:none;z-index:9;
+         box-shadow:0 8px 24px rgba(0,0,0,.18)}
+
+  .sucesso{display:none;text-align:center;padding:28px 18px}
+  .sucesso .check{width:76px;height:76px;border-radius:50%;background:var(--ok-bg);color:var(--ok);
+        font-size:44px;line-height:76px;margin:0 auto 12px;font-weight:800}
+  .sucesso h2{font-family:'Archivo',sans-serif;color:var(--navy);text-transform:uppercase;font-size:20px}
+  .sucesso .ganhou{font-family:'Archivo',sans-serif;color:var(--red);font-size:30px;margin:6px 0}
+  .sucesso p{color:var(--muted)}
+  .sucesso .proto{display:inline-block;margin-top:12px;background:var(--navy);color:#fff;
+        font-family:'Archivo',sans-serif;letter-spacing:1px;padding:7px 15px;border-radius:999px;font-size:13px}
+  .sucesso button{margin-top:20px;background:var(--navy);border:0;color:#fff;
+        border-radius:10px;padding:13px 22px;font-weight:800;cursor:pointer;font-family:'Archivo',sans-serif}
+</style>
+</head>
+<body>
+
+<header><div class="wrap">
+  <h1>Corrida do Engajamento</h1>
+  <p>Cada ação vale pontos · quem mais engajar leva a premiação · Só Tintas</p>
+</div></header>
+
+<main class="wrap" id="form">
+  <div class="hint">
+    <b>Como pontuar:</b> escolha a ação, anexe o print como prova e envie. O sistema
+    <b>lê o seu print</b> para validar — então mande a <b>tela inteira, nítida e sem cortes</b>.
+    Pode enviar quantas vezes quiser (um envio por ação).
+  </div>
+
+  <fieldset>
+    <legend>Autenticação</legend>
+    <div class="grid">
+      <label class="f"><span>Nome completo</span>
+        <input type="text" id="nome" placeholder="Seu nome" autocomplete="name"></label>
+      <label class="f"><span>Login Autcom</span>
+        <input type="text" id="login" placeholder="Seu login Autcom"></label>
+      <label class="f"><span>@ do Instagram</span>
+        <input type="text" id="insta" placeholder="@seuperfil"></label>
+      <label class="f"><span>Filial</span>
+        <select id="loja"><option value="">Selecione…</option></select></label>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>Qual ação você fez?</legend>
+    <div class="acoes" id="acoes"></div>
+  </fieldset>
+
+  <fieldset>
+    <legend>Sua prova (print)</legend>
+    <div class="drop" id="drop">
+      <div class="ic">📸</div>
+      <b>Toque para enviar o print</b>
+      <small id="dropHint">tela inteira, nítida — o sistema vai ler a imagem</small>
+    </div>
+    <input type="file" id="arquivo" accept="image/*" hidden>
+    <div id="preview"><img id="prevImg" alt="prévia"><div class="meta" id="prevMeta"></div></div>
+  </fieldset>
+</main>
+
+<div class="sucesso wrap" id="sucesso">
+  <div class="check">✓</div>
+  <h2>Enviado!</h2>
+  <div class="ganhou" id="ganhou">+5 pontos</div>
+  <p>Entrou como <b>pendente</b> e vai contar na corrida assim que o gestor validar o print.</p>
+  <div class="proto" id="proto"></div>
+  <br><button id="novo">Enviar outra ação</button>
+</div>
+
+<div class="send" id="barra"><div class="wrap">
+  <button id="enviar" disabled>Selecione uma ação</button>
+</div></div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ================= CONFIGURAÇÃO (edite aqui) ================= */
+const ENVIO_URL = 'COLE_AQUI_A_URL_DO_APPS_SCRIPT';   // termina em /exec
+const MAX_DIM   = 1400;   // maior lado do print (px) — maior ajuda o OCR a ler
+const JPEG_Q    = 0.82;   // qualidade do print (0–1) — mais alta ajuda o OCR
+
+/* ================= AÇÕES E PONTOS ================= */
+const ACOES = [
+  { cod:'direct_contato', pts:5, titulo:'Compartilhei o vídeo no direct com um contato',
+    sub:'não vale contato repetido' },
+  { cod:'comentario_5', pts:5, titulo:'Comentei marcando 5 @ de amigos',
+    sub:'comentário positivo · não vale marcação repetida' },
+  { cod:'video_externo', pts:5, titulo:'Compartilhei o vídeo da campanha externa',
+    sub:'via WhatsApp ou direct do Instagram' },
+  { cod:'curtida', pts:1, titulo:'Curti o vídeo oficial', sub:'na página @sotintasnet' },
+  { cod:'seguir', pts:1, titulo:'Sigo a página oficial', sub:'@sotintasnet' }
+];
+
+/* ================= FILIAIS E SUPERVISORES ================= */
+const SUPERVISOR = {
+  BRUNO:  ['002','004','006','007','010','013','015','022','023'],
+  TALITA: ['017','018','021','024','025','036'],
+  THIAGO: ['016','027','029','030','032','033','034','037'],
+  RAMON:  ['008','009','012','019','026','028','035','038']
+};
+const LOJA_SUP = {};
+for(const s in SUPERVISOR) SUPERVISOR[s].forEach(f=>LOJA_SUP[f]=s);
+
+/* ================= ESTADO ================= */
+let imgBase64 = '';
+let acaoSel = null;
+const el = id => document.getElementById(id);
+
+/* ---- filiais (sem supervisor no texto; supervisor vai derivado no envio) ---- */
+(function(){
+  const sel = el('loja');
+  Object.keys(LOJA_SUP).sort().forEach(l=>{
+    const o = document.createElement('option');
+    o.value = l; o.textContent = 'Loja ' + l;
+    sel.appendChild(o);
+  });
+})();
+el('loja').addEventListener('change', revalida);
+
+/* ---- cartões de ação ---- */
+(function(){
+  const box = el('acoes');
+  ACOES.forEach(a=>{
+    const div = document.createElement('div');
+    div.className = 'acao'; div.dataset.cod = a.cod;
+    div.innerHTML = '<div class="pts"><b>'+a.pts+'</b><small>PTS</small></div>' +
+                    '<div class="d"><b>'+a.titulo+'</b><small>'+a.sub+'</small></div>';
+    div.addEventListener('click', ()=> selecionaAcao(a, div));
+    box.appendChild(div);
+  });
+})();
+function selecionaAcao(a, div){
+  acaoSel = a;
+  document.querySelectorAll('.acao').forEach(x=>x.classList.remove('on'));
+  div.classList.add('on');
+  el('dropHint').textContent = 'print que comprova: ' + a.titulo.toLowerCase();
+  revalida();
+}
+
+/* ---- upload + compressão ---- */
+el('drop').addEventListener('click', ()=> el('arquivo').click());
+el('arquivo').addEventListener('change', e=>{
+  const file = e.target.files[0];
+  if(!file) return;
+  if(!file.type.startsWith('image/')){ toast('Envie uma imagem (print).'); return; }
+  comprimir(file, dataUrl=>{
+    imgBase64 = dataUrl.split(',')[1] || '';
+    el('prevImg').src = dataUrl;
+    const kb = Math.round((imgBase64.length*3/4)/1024);
+    el('prevMeta').textContent = 'Print pronto · ~' + kb + ' KB';
+    el('preview').style.display = 'block';
+    revalida();
+  });
+});
+function comprimir(file, cb){
+  const reader = new FileReader();
+  reader.onload = ev=>{
+    const img = new Image();
+    img.onload = ()=>{
+      let w = img.width, h = img.height;
+      if(w > h && w > MAX_DIM){ h = Math.round(h*MAX_DIM/w); w = MAX_DIM; }
+      else if(h >= w && h > MAX_DIM){ w = Math.round(w*MAX_DIM/h); h = MAX_DIM; }
+      const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+      cv.getContext('2d').drawImage(img, 0, 0, w, h);
+      cb(cv.toDataURL('image/jpeg', JPEG_Q));
+    };
+    img.onerror = ()=> toast('Não consegui ler essa imagem. Tente outro print.');
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+/* ---- validação ---- */
+function valido(){
+  return el('nome').value.trim().length>2 && el('login').value.trim().length>0 &&
+         el('insta').value.trim().length>1 && el('loja').value && acaoSel && imgBase64;
+}
+function revalida(){
+  const b = el('enviar');
+  b.disabled = !valido();
+  b.textContent = acaoSel ? ('Enviar (+' + acaoSel.pts + ' pts)') : 'Selecione uma ação';
+}
+['nome','login','insta'].forEach(id=> el(id).addEventListener('input', revalida));
+
+/* ---- toast ---- */
+let toastT;
+function toast(msg){
+  const t = el('toast'); t.textContent = msg; t.style.display='block';
+  clearTimeout(toastT); toastT = setTimeout(()=> t.style.display='none', 5000);
+}
+
+/* ---- envio ---- */
+el('enviar').addEventListener('click', ()=>{
+  if(!valido()){ toast('Escolha a ação, preencha os campos e anexe o print.'); return; }
+  if(ENVIO_URL.indexOf('script.google.com') === -1){ toast('Falta configurar o link de envio (ENVIO_URL).'); return; }
+
+  const b = el('enviar'); b.disabled = true; b.textContent = 'Lendo seu print…';
+  const loja = el('loja').value;
+  const payload = {
+    nome: el('nome').value.trim(),
+    login: el('login').value.trim(),
+    insta: el('insta').value.trim(),
+    loja: loja,
+    supervisor: LOJA_SUP[loja] || '',
+    acao: acaoSel.cod,
+    imgBase64: imgBase64,
+    imgTipo: 'image/jpeg',
+    arquivo: (el('insta').value.trim() || 'print').replace(/[^a-zA-Z0-9]/g,'') + '-' + acaoSel.cod + '-' + Date.now()
+  };
+
+  fetch(ENVIO_URL, { method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(payload) })
+    .then(r=>r.json())
+    .then(res=>{
+      if(!res || !res.ok){ throw new Error(res && res.erro ? res.erro : 'falha'); }
+
+      // print ilegível -> pede novo print, sem queimar a tentativa
+      if(res.ilegivel){
+        toast(res.motivo || 'Não consegui ler seu print. Reenvie a tela inteira, nítida e sem cortes.');
+        imgBase64 = ''; el('preview').style.display='none';
+        el('dropHint').textContent = acaoSel ? ('print que comprova: '+acaoSel.titulo.toLowerCase()) : 'tela inteira, nítida';
+        b.disabled=false; revalida(); return;
+      }
+
+      const h2 = document.querySelector('.sucesso h2');
+      const p  = document.querySelector('.sucesso p');
+      if(res.duplicado){
+        el('ganhou').textContent = 'Já registrado';
+        el('ganhou').style.color = 'var(--gold)';
+        h2.textContent = 'Isso já pontuou antes';
+        p.innerHTML = res.motivo || 'Esses dados já vieram antes — mande algo <b>novo</b> para pontuar.';
+      } else {
+        el('ganhou').textContent = '+' + (res.pontos!=null ? res.pontos : acaoSel.pts) + ' pontos';
+        el('ganhou').style.color = '';
+        h2.textContent = 'Enviado!';
+        p.innerHTML = 'Entrou como <b>pendente</b> e vai contar na corrida assim que o gestor validar o print.';
+      }
+      el('proto').textContent = res.protocolo || '';
+      el('form').style.display='none'; el('barra').style.display='none';
+      el('sucesso').style.display='block'; window.scrollTo(0,0);
+    })
+    .catch(()=>{ toast('Não consegui enviar agora. Confira a internet e tente de novo.');
+      b.disabled=false; revalida(); });
+});
+
+/* ---- enviar outra (mantém identidade) ---- */
+el('novo').addEventListener('click', ()=>{
+  acaoSel = null; imgBase64 = '';
+  document.querySelectorAll('.acao').forEach(x=>x.classList.remove('on'));
+  el('preview').style.display='none'; el('dropHint').textContent='tela inteira, nítida — o sistema vai ler a imagem';
+  el('sucesso').style.display='none'; el('form').style.display='block'; el('barra').style.display='block';
+  revalida(); window.scrollTo(0,0);
+});
+</script>
+</body>
+</html>
