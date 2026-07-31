@@ -26,6 +26,9 @@
         background:rgba(255,255,255,.12);color:#fff;padding:8px 12px;font-weight:700;cursor:pointer}
   select option{color:#111}
   .cnt{background:#fff;color:var(--navy);border-radius:999px;padding:6px 14px;font-family:'Archivo';font-weight:800}
+  .tab{font:inherit;border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.12);color:#fff;
+       border-radius:999px;padding:8px 14px;font-weight:800;cursor:pointer}
+  .tab.on{background:#fff;color:var(--navy)}
 
   /* login PIN */
   .lock{max-width:380px;margin:60px auto;background:#fff;border:1px solid var(--line);border-radius:16px;padding:26px;text-align:center}
@@ -72,6 +75,8 @@
 <header><div class="wrap">
   <h1>Validação de Envios<small>Corrida do Engajamento · Só Tintas</small></h1>
   <div class="tools" id="tools" style="display:none">
+    <button class="tab on" id="tbPend">Pendentes</button>
+    <button class="tab" id="tbAprov">Revisar aprovados</button>
     <select id="fSup"><option value="">Todos os supervisores</option>
       <option>BRUNO</option><option>TALITA</option><option>THIAGO</option><option>RAMON</option></select>
     <button class="b" id="refresh">Atualizar</button>
@@ -106,7 +111,8 @@ const ACAO_LABEL = {
   seguir:'Segue a página oficial'
 };
 const el = id => document.getElementById(id);
-let PIN = '', pendentes = [];
+function rotuloFilial(l){ return /^\d+$/.test(String(l)) ? ('Loja '+l) : String(l); }
+let PIN = '', pendentes = [], modo = 'pendentes';
 
 /* ---- login ---- */
 el('entrar').addEventListener('click', entrar);
@@ -121,7 +127,7 @@ function entrar(){
 
 /* ---- carrega pendentes ---- */
 function carrega(primeira){
-  fetch(BASE_URL + '?tipo=pendentes&pin=' + encodeURIComponent(PIN))
+  fetch(BASE_URL + '?tipo=' + modo + '&pin=' + encodeURIComponent(PIN))
     .then(r=>r.json())
     .then(res=>{
       if(!res || !res.ok){
@@ -139,8 +145,10 @@ function carrega(primeira){
 function render(){
   const sup = el('fSup').value;
   const lista = sup ? pendentes.filter(p=>p.sup===sup) : pendentes;
-  el('cnt').textContent = lista.length + (lista.length===1?' pendente':' pendentes');
+  const aprov = (modo==='aprovados');
+  el('cnt').textContent = lista.length + ' ' + (aprov ? (lista.length===1?'aprovado':'aprovados') : (lista.length===1?'pendente':'pendentes'));
   const box = el('lista'); box.innerHTML='';
+  el('vazio').textContent = aprov ? 'Nenhum aprovado por aqui ainda.' : 'Nenhum envio pendente por aqui. 🎉';
   el('vazio').style.display = lista.length ? 'none' : 'block';
 
   lista.forEach(p=>{
@@ -148,17 +156,18 @@ function render(){
     c.className='card'; c.dataset.proto=p.proto;
     const img = p.img ? '<img src="'+p.img+'" alt="print" referrerpolicy="no-referrer" onerror="this.style.display=\'none\'">'
                       : '<a class="abrir" href="'+p.link+'" target="_blank">abrir print no Drive</a>';
+    const acts = aprov
+      ? '<button class="rej" data-proto="'+p.proto+'" data-novo="Rejeitado">✕ Tirar da corrida</button>'
+      : '<button class="val" data-proto="'+p.proto+'" data-novo="Validado">✓ Validar</button>'+
+        '<button class="rej" data-proto="'+p.proto+'" data-novo="Rejeitado">✕ Rejeitar</button>';
     c.innerHTML =
       '<div class="print">'+img+'</div>'+
       '<div class="info">'+
-        '<div class="who"><b>'+p.nome+'</b> <span>'+p.insta+' · Loja '+p.loja+' · '+p.sup+' · '+p.data+'</span></div>'+
+        '<div class="who"><b>'+p.nome+'</b> <span>'+p.insta+' · '+rotuloFilial(p.loja)+' · '+p.sup+' · '+p.data+'</span></div>'+
         '<div class="tags"><span class="tag">'+(ACAO_LABEL[p.acao]||p.acao)+'</span><span class="tag pts">+'+p.pontos+' pts</span>'+
           '<a class="tag" href="'+p.link+'" target="_blank" style="text-decoration:none">abrir print ↗</a></div>'+
         '<div class="lido"><b>O que o OCR leu</b><div class="txt">'+(p.lido || '—')+'</div></div>'+
-        '<div class="acts">'+
-          '<button class="val" data-proto="'+p.proto+'" data-novo="Validado">✓ Validar</button>'+
-          '<button class="rej" data-proto="'+p.proto+'" data-novo="Rejeitado">✕ Rejeitar</button>'+
-        '</div>'+
+        '<div class="acts">'+acts+'</div>'+
       '</div>';
     box.appendChild(c);
   });
@@ -190,6 +199,8 @@ function decide(proto, novo, btn){
 
 el('refresh').addEventListener('click', ()=> carrega(false));
 el('fSup').addEventListener('change', render);
+el('tbPend').addEventListener('click', ()=>{ modo='pendentes'; el('tbPend').classList.add('on'); el('tbAprov').classList.remove('on'); carrega(false); });
+el('tbAprov').addEventListener('click', ()=>{ modo='aprovados'; el('tbAprov').classList.add('on'); el('tbPend').classList.remove('on'); carrega(false); });
 
 let toastT;
 function toast(m){ const t=el('toast'); t.textContent=m; t.style.display='block';
