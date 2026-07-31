@@ -29,6 +29,8 @@
   .tab{font:inherit;border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.12);color:#fff;
        border-radius:999px;padding:8px 14px;font-weight:800;cursor:pointer}
   .tab.on{background:#fff;color:var(--navy)}
+  .dt{font:inherit;border-radius:8px;border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.14);color:#fff;padding:7px 10px;font-weight:700}
+  .dt::-webkit-calendar-picker-indicator{filter:invert(1)}
 
   /* login PIN */
   .lock{max-width:380px;margin:60px auto;background:#fff;border:1px solid var(--line);border-radius:16px;padding:26px;text-align:center}
@@ -81,6 +83,8 @@
       <option>BRUNO</option><option>TALITA</option><option>THIAGO</option><option>RAMON</option></select>
     <button class="b" id="refresh">Atualizar</button>
     <span class="cnt" id="cnt">0 pendentes</span>
+    <input type="date" id="fim" class="dt" title="Data de encerramento da campanha">
+    <button class="b" id="salvarFim">Salvar prazo</button>
   </div>
 </div></header>
 
@@ -134,7 +138,8 @@ function carrega(primeira){
         if(primeira) el('loginErr').textContent = (res && res.erro==='pin') ? 'PIN incorreto.' : 'Erro ao entrar.';
         return;
       }
-      if(primeira){ el('login').style.display='none'; el('painel').style.display='block'; el('tools').style.display='flex'; }
+      if(primeira){ el('login').style.display='none'; el('painel').style.display='block'; el('tools').style.display='flex';
+        fetch(BASE_URL+'?tipo=config').then(r=>r.json()).then(c=>{ if(c&&c.ok&&c.encerramento) el('fim').value=c.encerramento; }).catch(()=>{}); }
       pendentes = res.pendentes || [];
       render();
     })
@@ -201,6 +206,15 @@ el('refresh').addEventListener('click', ()=> carrega(false));
 el('fSup').addEventListener('change', render);
 el('tbPend').addEventListener('click', ()=>{ modo='pendentes'; el('tbPend').classList.add('on'); el('tbAprov').classList.remove('on'); carrega(false); });
 el('tbAprov').addEventListener('click', ()=>{ modo='aprovados'; el('tbAprov').classList.add('on'); el('tbPend').classList.remove('on'); carrega(false); });
+
+el('salvarFim').addEventListener('click', ()=>{
+  const data = el('fim').value;
+  fetch(BASE_URL+'?tipo=setencerramento&pin='+encodeURIComponent(PIN)+'&data='+encodeURIComponent(data))
+    .then(r=>r.json())
+    .then(res=>{ if(res&&res.ok) toast(data ? ('Encerramento salvo: '+data.split('-').reverse().join('/')) : 'Prazo removido');
+                 else toast('Não consegui salvar o prazo.'); })
+    .catch(()=>toast('Sem conexão para salvar o prazo.'));
+});
 
 let toastT;
 function toast(m){ const t=el('toast'); t.textContent=m; t.style.display='block';
