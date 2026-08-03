@@ -60,11 +60,12 @@
   .lido{background:#FBFCFE;border:1px dashed var(--line);border-radius:10px;padding:10px 12px;font-size:13px}
   .lido b{display:block;font-size:10.5px;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
   .lido .txt{color:var(--navy);font-weight:600;word-break:break-word}
-  .acts{display:flex;gap:10px;margin-top:auto}
-  .acts button{flex:1;border:0;border-radius:10px;padding:12px;font-family:'Archivo';font-weight:800;
+  .acts{display:flex;gap:10px;margin-top:auto;flex-wrap:wrap}
+  .acts button{flex:1 1 40%;border:0;border-radius:10px;padding:12px;font-family:'Archivo';font-weight:800;
         text-transform:uppercase;letter-spacing:.4px;cursor:pointer;font-size:14px}
   .val{background:var(--ok-bg);color:var(--ok)} .val:hover{background:#CFEBD8}
   .rej{background:var(--no-bg);color:var(--no)} .rej:hover{background:#F6D5D7}
+  .lote{background:#fff;color:var(--no);border:1.5px solid var(--no)} .lote:hover{background:var(--no-bg)}
   .card.saindo{opacity:.35;transform:scale(.99);transition:.25s}
 
   .toast{position:fixed;left:16px;right:16px;bottom:20px;max-width:400px;margin:0 auto;
@@ -164,7 +165,8 @@ function render(){
     const acts = aprov
       ? '<button class="rej" data-proto="'+p.proto+'" data-novo="Rejeitado">✕ Tirar da corrida</button>'
       : '<button class="val" data-proto="'+p.proto+'" data-novo="Validado">✓ Validar</button>'+
-        '<button class="rej" data-proto="'+p.proto+'" data-novo="Rejeitado">✕ Rejeitar</button>';
+        '<button class="rej" data-proto="'+p.proto+'" data-novo="Rejeitado">✕ Rejeitar</button>'+
+        '<button class="lote" data-proto="'+p.proto+'">✕✕ Rejeitar cópias</button>';
     c.innerHTML =
       '<div class="print">'+img+'</div>'+
       '<div class="info">'+
@@ -178,8 +180,19 @@ function render(){
   });
 
   box.querySelectorAll('.acts button').forEach(b=>{
-    b.addEventListener('click', ()=> decide(b.dataset.proto, b.dataset.novo, b));
+    if(b.classList.contains('lote')) b.addEventListener('click', ()=> rejeitarLote(b.dataset.proto, b));
+    else b.addEventListener('click', ()=> decide(b.dataset.proto, b.dataset.novo, b));
   });
+}
+
+/* ---- rejeitar todas as cópias idênticas ---- */
+function rejeitarLote(proto, btn){
+  if(!confirm('Rejeitar TODAS as cópias idênticas deste print (mesma imagem)?')) return;
+  const card=btn.closest('.card'); card.classList.add('saindo'); card.querySelectorAll('button').forEach(x=>x.disabled=true);
+  fetch(BASE_URL+'?tipo=rejeitar_lote&pin='+encodeURIComponent(PIN)+'&proto='+encodeURIComponent(proto))
+    .then(r=>r.json())
+    .then(res=>{ if(res&&res.ok){ toast(res.rejeitadas+' cópia(s) rejeitada(s) ✕'); carrega(false); } else throw new Error(); })
+    .catch(()=>{ card.classList.remove('saindo'); card.querySelectorAll('button').forEach(x=>x.disabled=false); toast('Não consegui rejeitar as cópias.'); });
 }
 
 /* ---- validar / rejeitar ---- */
