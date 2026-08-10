@@ -186,19 +186,21 @@ function render(){
   });
 }
 
-/* ---- rejeitar as cópias do mesmo envio (some da tela na hora) ---- */
+/* ---- rejeitar todos os envios da mesma ação do colaborador (some da tela na hora) ---- */
 function rejeitarLote(proto, btn){
-  if(!confirm('Rejeitar TODAS as cópias deste envio (mesmo colaborador, mesma ação, mesmo conteúdo)?')) return;
   const alvo = pendentes.find(p=>p.proto===proto);
+  const nome = alvo ? alvo.nome : 'este colaborador';
+  const acaoLbl = alvo ? (ACAO_LABEL[alvo.acao]||alvo.acao) : 'esta ação';
+  if(!confirm('Rejeitar TODOS os envios de "'+acaoLbl+'" de '+nome+'?\n(as cópias saem de uma vez e não voltam)')) return;
   const card=btn.closest('.card'); card.classList.add('saindo'); card.querySelectorAll('button').forEach(x=>x.disabled=true);
   fetch(BASE_URL+'?tipo=rejeitar_lote&pin='+encodeURIComponent(PIN)+'&proto='+encodeURIComponent(proto))
     .then(r=>r.json())
     .then(res=>{ if(res && res.ok){
-        if(alvo){ pendentes = pendentes.filter(p=> !(p.login===alvo.login && p.acao===alvo.acao && p.lido===alvo.lido)); }
+        if(alvo){ pendentes = pendentes.filter(p=> !(p.login===alvo.login && p.acao===alvo.acao)); }
         render();
         toast(res.rejeitadas+' envio(s) rejeitado(s) ✕');
       } else throw new Error(); })
-    .catch(()=>{ card.classList.remove('saindo'); card.querySelectorAll('button').forEach(x=>x.disabled=false); toast('Não consegui rejeitar as cópias.'); });
+    .catch(()=>{ card.classList.remove('saindo'); card.querySelectorAll('button').forEach(x=>x.disabled=false); toast('Não consegui rejeitar.'); });
 }
 
 /* ---- validar / rejeitar ---- */
