@@ -322,17 +322,24 @@ function toast(m, erro){ const t=el('toast'); t.textContent=m; t.className='toas
 function setPosicao(pos, corr){ const p=el('posicao');
   if(pos && pos>0){ p.style.display='block'; p.textContent='🏁 Você está em '+pos+'º'+(corr?(' de '+corr):''); }
   else p.style.display='none'; }
-let _fimData=null, _relTimer=null;
+let _fimData=null, _relTimer=null, _fimEnc=null;
+function parseFim(enc){ if(!enc) return null;
+  const s=String(enc).trim();
+  const d = /^\d{4}-\d{2}-\d{2}$/.test(s) ? new Date(s+'T23:59:59-03:00') : new Date(s);
+  return isNaN(d.getTime()) ? null : d; }
+function fmtBr(d){ return ('0'+d.getDate()).slice(-2)+'/'+('0'+(d.getMonth()+1)).slice(-2)+'/'+d.getFullYear(); }
+function fmtBrEnc(enc){ const s=String(enc||'').trim();
+  if(/^\d{4}-\d{2}-\d{2}$/.test(s)){ const p=s.split('-'); return p[2]+'/'+p[1]+'/'+p[0]; }
+  const d=parseFim(s); return d?fmtBr(d):''; }
 function setPrazo(enc){
-  const p=el('relogio');
-  if(!enc){ _fimData=null; if(_relTimer){clearInterval(_relTimer);_relTimer=null;} p.style.display='none'; encerrada=false; revalida(); return; }
-  _fimData = new Date(enc+'T23:59:59-03:00');
-  tickRelogio(enc);
+  const p=el('relogio'); _fimData = parseFim(enc); _fimEnc = enc;
+  if(!_fimData){ if(_relTimer){clearInterval(_relTimer);_relTimer=null;} p.style.display='none'; encerrada=false; revalida(); return; }
+  tickRelogio();
   if(_relTimer) clearInterval(_relTimer);
-  _relTimer = setInterval(()=>tickRelogio(enc), 30000);   // atualiza a cada 30s
+  _relTimer = setInterval(tickRelogio, 30000);   // atualiza a cada 30s
 }
-function tickRelogio(enc){
-  const p=el('relogio'); const dataBr=enc.split('-').reverse().join('/');
+function tickRelogio(){
+  const p=el('relogio'); const dataBr=fmtBrEnc(_fimEnc);
   const ms=_fimData - new Date();
   if(ms<=0){ encerrada=true; p.className='fim'; p.innerHTML='🏁 Campanha encerrada em '+dataBr; p.style.display='block'; revalida(); return; }
   encerrada=false; p.className='';
