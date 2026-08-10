@@ -172,15 +172,20 @@ function render(data){
   setPrazo(data.encerramento);
 }
 
-let _fimP=null, _tP=null;
+let _fimP=null, _tP=null, _fimEncP=null;
+function parseFim(enc){ if(!enc) return null;
+  const s=String(enc).trim();
+  const d = /^\d{4}-\d{2}-\d{2}$/.test(s) ? new Date(s+'T23:59:59-03:00') : new Date(s);
+  return isNaN(d.getTime()) ? null : d; }
+function fmtBr(d){ return ('0'+d.getDate()).slice(-2)+'/'+('0'+(d.getMonth()+1)).slice(-2)+'/'+d.getFullYear(); }
+function fmtBrEnc(enc){ const s=String(enc||'').trim(); if(/^\d{4}-\d{2}-\d{2}$/.test(s)){ const p=s.split('-'); return p[2]+'/'+p[1]+'/'+p[0]; } const d=parseFim(s); return d?fmtBr(d):''; }
 function setPrazo(enc){
-  const p=el('prazoP');
-  if(!enc){ _fimP=null; if(_tP){clearInterval(_tP);_tP=null;} p.style.display='none'; return; }
-  _fimP=new Date(enc+'T23:59:59-03:00'); tickP(enc);
-  if(_tP) clearInterval(_tP); _tP=setInterval(()=>tickP(enc), 30000);
+  const p=el('prazoP'); _fimP = parseFim(enc); _fimEncP = enc;
+  if(!_fimP){ if(_tP){clearInterval(_tP);_tP=null;} p.style.display='none'; return; }
+  tickP(); if(_tP) clearInterval(_tP); _tP=setInterval(tickP, 30000);
 }
-function tickP(enc){
-  const p=el('prazoP'); const dataBr=enc.split('-').reverse().join('/'); const ms=_fimP-new Date();
+function tickP(){
+  const p=el('prazoP'); const dataBr=fmtBrEnc(_fimEncP); const ms=_fimP-new Date();
   if(ms<=0){ p.className='prazoP fim'; p.innerHTML='🏁 Campanha encerrada em '+dataBr; p.style.display='block'; return; }
   const d=Math.floor(ms/86400000), h=Math.floor(ms%86400000/3600000), m=Math.floor(ms%3600000/60000);
   const rel=(d>0?d+'d ':'')+('0'+h).slice(-2)+'h '+('0'+m).slice(-2)+'m';
