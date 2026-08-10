@@ -66,6 +66,9 @@
   .demo{background:#FFF7DE;border:1px solid #F0DFA0;border-left:4px solid var(--red);border-radius:8px;
         padding:9px 12px;font-size:12.5px;color:var(--navy);margin:16px 0 4px;text-align:center}
   .foot{text-align:center;color:var(--muted);font-size:11.5px;margin-top:20px}
+  .prazoP{margin:14px 0 2px;padding:12px 16px;border-radius:12px;text-align:center;font-family:'Archivo',sans-serif;
+          font-weight:800;font-size:clamp(15px,2.2vw,20px);background:linear-gradient(90deg,var(--navy),#3A5D9E);color:#fff}
+  .prazoP.fim{background:var(--red)}
 </style>
 </head>
 <body>
@@ -77,6 +80,7 @@
 
 <div class="wrap">
   <div id="avisoDemo" class="demo">Modo demonstração — dados de exemplo. Ao conectar a planilha (RANKING_URL), o painel passa a mostrar os pontos reais validados.</div>
+  <div id="prazoP" class="prazoP" style="display:none"></div>
 
   <div class="toggle">
     <button id="tbV" class="on">Vendedores</button>
@@ -137,7 +141,7 @@ function agregaLojas(vs){
 function render(data){
   const vs = (data.vendedores||[]).slice().sort((a,b)=>b.pontos-a.pontos);
   const lojas = agregaLojas(vs);
-  const lista = (modo==='vendedores' ? vs : lojas).slice(0, TOP_N);
+  const lista = (modo==='vendedores' ? vs : lojas);
   const max = Math.max(1, lista.length ? lista[0].pontos : 1);
 
   el('kTotal').textContent = data.total!=null ? data.total : vs.reduce((s,v)=>s+v.pontos,0);
@@ -165,6 +169,17 @@ function render(data){
 
   const agora = new Date();
   el('hora').textContent = ('0'+agora.getHours()).slice(-2)+':'+('0'+agora.getMinutes()).slice(-2);
+  setPrazo(data.encerramento);
+}
+
+function setPrazo(enc){
+  const p=el('prazoP');
+  if(!enc){ p.style.display='none'; return; }
+  const fim=new Date(enc+'T23:59:59-03:00'), agora=new Date();
+  const dataBr=enc.split('-').reverse().join('/'), dias=Math.ceil((fim-agora)/86400000);
+  if(agora>fim){ p.className='prazoP fim'; p.textContent='🏁 Campanha encerrada em '+dataBr; }
+  else { p.className='prazoP'; p.textContent = dias<=1 ? ('⏳ Último dia! Encerra em '+dataBr) : ('⏳ Faltam '+dias+' dias — encerra em '+dataBr); }
+  p.style.display='block';
 }
 
 /* ---- busca dados reais; cai no demo se não houver ---- */
