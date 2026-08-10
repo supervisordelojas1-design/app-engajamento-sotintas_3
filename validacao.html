@@ -84,6 +84,7 @@
       <option>BRUNO</option><option>TALITA</option><option>THIAGO</option><option>RAMON</option></select>
     <button class="b" id="refresh">Atualizar</button>
     <span class="cnt" id="cnt">0 pendentes</span>
+    <span class="cnt" id="fimAtual" title="Encerramento definido">⏳ —</span>
     <input type="date" id="fim" class="dt" title="Data de encerramento da campanha">
     <button class="b" id="salvarFim">Salvar prazo</button>
   </div>
@@ -140,7 +141,7 @@ function carrega(primeira){
         return;
       }
       if(primeira){ el('login').style.display='none'; el('painel').style.display='block'; el('tools').style.display='flex';
-        fetch(BASE_URL+'?tipo=config').then(r=>r.json()).then(c=>{ if(c&&c.ok&&c.encerramento) el('fim').value=c.encerramento; }).catch(()=>{}); }
+        fetch(BASE_URL+'?tipo=config').then(r=>r.json()).then(c=>{ if(c&&c.ok){ el('fim').value=c.encerramento||''; mostraFim(c.encerramento); } }).catch(()=>{}); }
       pendentes = res.pendentes || [];
       render();
     })
@@ -220,11 +221,13 @@ el('fSup').addEventListener('change', render);
 el('tbPend').addEventListener('click', ()=>{ modo='pendentes'; el('tbPend').classList.add('on'); el('tbAprov').classList.remove('on'); carrega(false); });
 el('tbAprov').addEventListener('click', ()=>{ modo='aprovados'; el('tbAprov').classList.add('on'); el('tbPend').classList.remove('on'); carrega(false); });
 
+function mostraFim(enc){ el('fimAtual').textContent = enc ? ('⏳ Encerra '+enc.split('-').reverse().join('/')) : '⏳ sem prazo'; }
+
 el('salvarFim').addEventListener('click', ()=>{
   const data = el('fim').value;
   fetch(BASE_URL+'?tipo=setencerramento&pin='+encodeURIComponent(PIN)+'&data='+encodeURIComponent(data))
     .then(r=>r.json())
-    .then(res=>{ if(res&&res.ok) toast(data ? ('Encerramento salvo: '+data.split('-').reverse().join('/')) : 'Prazo removido');
+    .then(res=>{ if(res&&res.ok){ mostraFim(data); toast(data ? ('Encerramento salvo: '+data.split('-').reverse().join('/')) : 'Prazo removido'); }
                  else toast('Não consegui salvar o prazo.'); })
     .catch(()=>toast('Sem conexão para salvar o prazo.'));
 });
