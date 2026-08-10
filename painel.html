@@ -172,13 +172,19 @@ function render(data){
   setPrazo(data.encerramento);
 }
 
+let _fimP=null, _tP=null;
 function setPrazo(enc){
   const p=el('prazoP');
-  if(!enc){ p.style.display='none'; return; }
-  const fim=new Date(enc+'T23:59:59-03:00'), agora=new Date();
-  const dataBr=enc.split('-').reverse().join('/'), dias=Math.ceil((fim-agora)/86400000);
-  if(agora>fim){ p.className='prazoP fim'; p.textContent='🏁 Campanha encerrada em '+dataBr; }
-  else { p.className='prazoP'; p.textContent = dias<=1 ? ('⏳ Último dia! Encerra em '+dataBr) : ('⏳ Faltam '+dias+' dias — encerra em '+dataBr); }
+  if(!enc){ _fimP=null; if(_tP){clearInterval(_tP);_tP=null;} p.style.display='none'; return; }
+  _fimP=new Date(enc+'T23:59:59-03:00'); tickP(enc);
+  if(_tP) clearInterval(_tP); _tP=setInterval(()=>tickP(enc), 30000);
+}
+function tickP(enc){
+  const p=el('prazoP'); const dataBr=enc.split('-').reverse().join('/'); const ms=_fimP-new Date();
+  if(ms<=0){ p.className='prazoP fim'; p.innerHTML='🏁 Campanha encerrada em '+dataBr; p.style.display='block'; return; }
+  const d=Math.floor(ms/86400000), h=Math.floor(ms%86400000/3600000), m=Math.floor(ms%3600000/60000);
+  const rel=(d>0?d+'d ':'')+('0'+h).slice(-2)+'h '+('0'+m).slice(-2)+'m';
+  p.className='prazoP'; p.innerHTML='⏳ ENCERRA EM '+rel+' <span style="opacity:.8;font-size:.78em">('+dataBr+')</span>';
   p.style.display='block';
 }
 
