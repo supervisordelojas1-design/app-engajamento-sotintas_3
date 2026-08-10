@@ -141,7 +141,7 @@ function carrega(primeira){
         return;
       }
       if(primeira){ el('login').style.display='none'; el('painel').style.display='block'; el('tools').style.display='flex';
-        fetch(BASE_URL+'?tipo=config').then(r=>r.json()).then(c=>{ if(c&&c.ok){ el('fim').value=c.encerramento||''; mostraFim(c.encerramento); } }).catch(()=>{}); }
+        fetch(BASE_URL+'?tipo=config').then(r=>r.json()).then(c=>{ if(c&&c.ok){ const d=parseFim(c.encerramento); el('fim').value = d?fmtISO(d):''; mostraFim(c.encerramento); } }).catch(()=>{}); }
       pendentes = res.pendentes || [];
       render();
     })
@@ -228,7 +228,14 @@ el('fSup').addEventListener('change', render);
 el('tbPend').addEventListener('click', ()=>{ modo='pendentes'; el('tbPend').classList.add('on'); el('tbAprov').classList.remove('on'); carrega(false); });
 el('tbAprov').addEventListener('click', ()=>{ modo='aprovados'; el('tbAprov').classList.add('on'); el('tbPend').classList.remove('on'); carrega(false); });
 
-function mostraFim(enc){ el('fimAtual').textContent = enc ? ('⏳ Encerra '+enc.split('-').reverse().join('/')) : '⏳ sem prazo'; }
+function parseFim(enc){ if(!enc) return null;
+  const s=String(enc).trim();
+  const d = /^\d{4}-\d{2}-\d{2}$/.test(s) ? new Date(s+'T23:59:59-03:00') : new Date(s);
+  return isNaN(d.getTime()) ? null : d; }
+function fmtBr(d){ return ('0'+d.getDate()).slice(-2)+'/'+('0'+(d.getMonth()+1)).slice(-2)+'/'+d.getFullYear(); }
+function fmtISO(d){ return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2); }
+function fmtBrEnc(enc){ const s=String(enc||'').trim(); if(/^\d{4}-\d{2}-\d{2}$/.test(s)){ const p=s.split('-'); return p[2]+'/'+p[1]+'/'+p[0]; } const d=parseFim(s); return d?fmtBr(d):''; }
+function mostraFim(enc){ const t=fmtBrEnc(enc); el('fimAtual').textContent = t ? ('⏳ Encerra '+t) : '⏳ sem prazo'; }
 
 el('salvarFim').addEventListener('click', ()=>{
   const data = el('fim').value;
