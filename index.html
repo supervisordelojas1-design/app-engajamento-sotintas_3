@@ -57,9 +57,11 @@
   .placar b{font-family:'Archivo',sans-serif;font-size:28px;color:var(--navy)}
   .placar .box.tot b{color:#fff}
 
-  .prazo{background:#EAF1FB;border:1px solid #C9D9F1;border-radius:10px;padding:9px 12px;text-align:center;
-         font-weight:800;color:var(--navy);font-size:13px;margin-bottom:12px}
-  .prazo.fim{background:var(--no-bg);border-color:#F0C0C3;color:var(--no)}
+  #relogio{position:sticky;top:0;z-index:30;display:none;text-align:center;padding:10px 12px;
+           background:linear-gradient(90deg,var(--navy),#3A5D9E);color:#fff;font-family:'Archivo',sans-serif;
+           font-weight:800;font-size:15px;letter-spacing:.3px;border-bottom:3px solid var(--red)}
+  #relogio .rl{font-size:19px;letter-spacing:1px}
+  #relogio.fim{background:var(--red);border-bottom-color:#7a0000}
   .posicao{background:var(--gold);color:#3a2c00;border-radius:10px;padding:9px 12px;text-align:center;
            font-weight:800;margin-bottom:14px;font-family:'Archivo',sans-serif}
   .verEx{background:none;border:0;color:var(--navy);font:inherit;font-weight:800;text-decoration:underline;
@@ -134,6 +136,8 @@
   <p>Cumpra as etapas na ordem e pontue · Só Tintas</p>
 </div></header>
 
+<div id="relogio"></div>
+
 <main class="wrap" id="form">
   <div class="hint">
     <b>Como funciona:</b> faça a ação da <b>etapa atual</b>, mande o print e o app confirma —
@@ -154,8 +158,6 @@
       <label class="f"><span>Filial</span><select id="loja"><option value="">Selecione…</option></select></label>
     </div>
   </fieldset>
-
-  <div id="prazo" class="prazo" style="display:none"></div>
 
   <div class="placar">
     <div class="box"><span>Nesta sessão</span><b id="ptSessao">0</b></div>
@@ -320,13 +322,25 @@ function toast(m, erro){ const t=el('toast'); t.textContent=m; t.className='toas
 function setPosicao(pos, corr){ const p=el('posicao');
   if(pos && pos>0){ p.style.display='block'; p.textContent='🏁 Você está em '+pos+'º'+(corr?(' de '+corr):''); }
   else p.style.display='none'; }
-function setPrazo(enc){ const p=el('prazo');
-  if(!enc){ p.style.display='none'; encerrada=false; revalida(); return; }
-  const fim=new Date(enc+'T23:59:59-03:00'), agora=new Date();
-  const dataBr=enc.split('-').reverse().join('/'), dias=Math.ceil((fim-agora)/86400000);
-  if(agora>fim){ encerrada=true; p.className='prazo fim'; p.textContent='Campanha encerrada em '+dataBr+'.'; }
-  else { encerrada=false; p.className='prazo'; p.textContent = dias<=1 ? ('Último dia! Encerra em '+dataBr) : ('Faltam '+dias+' dias — encerra em '+dataBr); }
-  p.style.display='block'; revalida(); }
+let _fimData=null, _relTimer=null;
+function setPrazo(enc){
+  const p=el('relogio');
+  if(!enc){ _fimData=null; if(_relTimer){clearInterval(_relTimer);_relTimer=null;} p.style.display='none'; encerrada=false; revalida(); return; }
+  _fimData = new Date(enc+'T23:59:59-03:00');
+  tickRelogio(enc);
+  if(_relTimer) clearInterval(_relTimer);
+  _relTimer = setInterval(()=>tickRelogio(enc), 30000);   // atualiza a cada 30s
+}
+function tickRelogio(enc){
+  const p=el('relogio'); const dataBr=enc.split('-').reverse().join('/');
+  const ms=_fimData - new Date();
+  if(ms<=0){ encerrada=true; p.className='fim'; p.innerHTML='🏁 Campanha encerrada em '+dataBr; p.style.display='block'; revalida(); return; }
+  encerrada=false; p.className='';
+  const d=Math.floor(ms/86400000), h=Math.floor(ms%86400000/3600000), m=Math.floor(ms%3600000/60000);
+  const rel = (d>0?d+'d ':'') + ('0'+h).slice(-2)+'h '+('0'+m).slice(-2)+'m';
+  p.innerHTML='⏳ ENCERRA EM <span class="rl">'+rel+'</span>';
+  p.style.display='block'; revalida();
+}
 function refreshTotais(){ const d=getId(); if(!d||!d.login) return;
   fetch(ENVIO_URL+'?tipo=meutotal&login='+encodeURIComponent(padLogin(d.login)))
     .then(r=>r.json()).then(res=>{ if(res&&res.ok){
