@@ -85,6 +85,7 @@
   <div class="toggle">
     <button id="tbV" class="on">Vendedores</button>
     <button id="tbL">Lojas</button>
+    <button id="tbS">Supervisores</button>
   </div>
 
   <div class="resumo">
@@ -110,15 +111,15 @@ const DEMO = {
   total: 486, participacoes: 132,
   vendedores: [
     {nome:'Ana Beatriz',   insta:'@ana.paint',   loja:'006', sup:'BRUNO',  pontos:62},
-    {nome:'Carlos Menezes',insta:'@carlosmnz',   loja:'017', sup:'TALITA', pontos:55},
+    {nome:'Carlos Menezes',insta:'@carlosmnz',   loja:'017', sup:'DANILO', pontos:55},
     {nome:'Diego Rocha',   insta:'@diego.rocha', loja:'027', sup:'THIAGO', pontos:48},
-    {nome:'Priscila Alves',insta:'@pri.alves',   loja:'008', sup:'RAMON',  pontos:41},
+    {nome:'Priscila Alves',insta:'@pri.alves',   loja:'008', sup:'RODRIGO BRANCO', pontos:41},
     {nome:'Rafael Souza',  insta:'@rafa.souza',  loja:'004', sup:'BRUNO',  pontos:37},
-    {nome:'Juliana Dias',  insta:'@ju.dias',     loja:'018', sup:'TALITA', pontos:33},
+    {nome:'Juliana Dias',  insta:'@ju.dias',     loja:'018', sup:'RAMON',  pontos:33},
     {nome:'Marcos Lima',   insta:'@marcoslima',  loja:'030', sup:'THIAGO', pontos:29},
-    {nome:'Beatriz Nunes', insta:'@bia.nunes',   loja:'009', sup:'RAMON',  pontos:24},
+    {nome:'Beatriz Nunes', insta:'@bia.nunes',   loja:'009', sup:'DANILO', pontos:24},
     {nome:'Felipe Castro', insta:'@felipec',     loja:'010', sup:'BRUNO',  pontos:20},
-    {nome:'Larissa Melo',  insta:'@lari.melo',   loja:'024', sup:'TALITA', pontos:16}
+    {nome:'Larissa Melo',  insta:'@lari.melo',   loja:'024', sup:'RAMON',  pontos:16}
   ]
 };
 
@@ -138,24 +139,35 @@ function agregaLojas(vs){
   return Object.values(m).sort((a,b)=>b.pontos-a.pontos);
 }
 
+function agregaSupervisores(vs){
+  const m = {};
+  vs.forEach(v=>{
+    const s = (v.sup && String(v.sup).trim()) ? v.sup : '(sem supervisor)';
+    if(!m[s]) m[s] = {sup:s, pontos:0, gente:0};
+    m[s].pontos += v.pontos; m[s].gente += 1;
+  });
+  return Object.values(m).sort((a,b)=>b.pontos-a.pontos);
+}
+
 function render(data){
   const vs = (data.vendedores||[]).slice().sort((a,b)=>b.pontos-a.pontos);
   const lojas = agregaLojas(vs);
-  const lista = (modo==='vendedores' ? vs : lojas);
+  const sups  = agregaSupervisores(vs);
+  const lista = modo==='vendedores' ? vs : (modo==='lojas' ? lojas : sups);
   const max = Math.max(1, lista.length ? lista[0].pontos : 1);
 
   el('kTotal').textContent = data.total!=null ? data.total : vs.reduce((s,v)=>s+v.pontos,0);
   el('kPart').textContent  = data.participacoes!=null ? data.participacoes : '—';
-  el('kGente').textContent = (modo==='vendedores' ? vs.length : lojas.length);
-  el('tituloSec').textContent = modo==='vendedores' ? 'Top vendedores' : 'Corrida das lojas';
+  el('kGente').textContent = modo==='vendedores' ? vs.length : (modo==='lojas' ? lojas.length : sups.length);
+  el('tituloSec').textContent = modo==='vendedores' ? 'Top vendedores' : (modo==='lojas' ? 'Corrida das lojas' : 'Corrida dos supervisores');
 
   const pista = el('pista'); pista.innerHTML='';
   lista.forEach((r,i)=>{
     const pos = i+1, pct = Math.max(6, Math.round(r.pontos/max*100));
-    const nome = modo==='vendedores' ? r.nome : rotuloFilial(r.loja);
-    const info = modo==='vendedores'
-        ? (r.insta+' · '+rotuloFilial(r.loja))
-        : (r.sup+' · '+r.gente+' na disputa');
+    const nome = modo==='vendedores' ? r.nome : (modo==='lojas' ? rotuloFilial(r.loja) : r.sup);
+    const info = modo==='vendedores' ? (r.insta+' · '+rotuloFilial(r.loja))
+               : modo==='lojas'      ? (r.sup+' · '+r.gente+' na disputa')
+               :                       (r.gente+' na disputa');
     const div = document.createElement('div');
     div.className = 'lane' + (pos<=3 ? ' top'+pos : '');
     div.innerHTML =
@@ -208,8 +220,10 @@ function carrega(){
 }
 
 /* ---- toggle ---- */
-el('tbV').addEventListener('click', ()=>{ modo='vendedores'; el('tbV').classList.add('on'); el('tbL').classList.remove('on'); carrega(); });
-el('tbL').addEventListener('click', ()=>{ modo='lojas'; el('tbL').classList.add('on'); el('tbV').classList.remove('on'); carrega(); });
+function setModo(m, btnId){ modo=m; ['tbV','tbL','tbS'].forEach(id=>el(id).classList.toggle('on', id===btnId)); carrega(); }
+el('tbV').addEventListener('click', ()=> setModo('vendedores','tbV'));
+el('tbL').addEventListener('click', ()=> setModo('lojas','tbL'));
+el('tbS').addEventListener('click', ()=> setModo('supervisores','tbS'));
 
 carrega();
 setInterval(carrega, REFRESH_MS);
