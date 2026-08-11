@@ -83,9 +83,9 @@
   <div id="prazoP" class="prazoP" style="display:none"></div>
 
   <div class="toggle">
-    <button id="tbV" class="on">Vendedores</button>
-    <button id="tbL">Lojas</button>
-    <button id="tbS">Supervisores</button>
+    <button id="tbV" class="on">Funcionário</button>
+    <button id="tbL">Setor / Loja</button>
+    <button id="tbS">Supervisor</button>
   </div>
 
   <div class="resumo">
@@ -94,7 +94,7 @@
     <div class="kpi"><b>Na corrida</b><strong id="kGente">0</strong></div>
   </div>
 
-  <h2 class="sec" id="tituloSec">Top vendedores</h2>
+  <h2 class="sec" id="tituloSec">Top funcionários</h2>
   <div id="pista"></div>
 
   <div class="foot">Só pontos com print <b>validado</b> pelo gestor entram na corrida.</div>
@@ -159,7 +159,7 @@ function render(data){
   el('kTotal').textContent = data.total!=null ? data.total : vs.reduce((s,v)=>s+v.pontos,0);
   el('kPart').textContent  = data.participacoes!=null ? data.participacoes : '—';
   el('kGente').textContent = modo==='vendedores' ? vs.length : (modo==='lojas' ? lojas.length : sups.length);
-  el('tituloSec').textContent = modo==='vendedores' ? 'Top vendedores' : (modo==='lojas' ? 'Corrida das lojas' : 'Corrida dos supervisores');
+  el('tituloSec').textContent = modo==='vendedores' ? 'Top funcionários' : (modo==='lojas' ? 'Corrida dos setores / lojas' : 'Corrida dos supervisores');
 
   const pista = el('pista'); pista.innerHTML='';
   lista.forEach((r,i)=>{
