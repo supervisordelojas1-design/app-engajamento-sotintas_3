@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rifa Solidária · Juntos pela Priscila</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800;900&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --roxo:#5B1A8B; --roxo2:#7B2CBF; --rosa:#E5399B; --rosa2:#FF6BB0;
+    --ink:#2A1440; --muted:#6E5A82; --paper:#FBF3FB; --card:#FFFFFF; --line:#EAD8ED;
+    --ok:#1B7A3D; --ok-bg:#E4F4E9; --amar:#C98A00; --amar-bg:#FBF1D6;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--paper);color:var(--ink);font-size:15px;line-height:1.45;font-weight:600;padding-bottom:96px}
+  .wrap{max-width:860px;margin:0 auto;padding:0 14px}
+
+  header{background:linear-gradient(135deg,var(--roxo),var(--rosa));color:#fff;padding:22px 14px 18px;text-align:center}
+  header h1{font-family:'Archivo',sans-serif;font-weight:900;font-size:clamp(24px,7vw,40px);letter-spacing:.5px;line-height:1}
+  header .sub{font-family:'Archivo',sans-serif;font-weight:800;font-size:clamp(14px,4vw,20px);margin-top:4px;opacity:.95}
+  header p{font-size:13px;opacity:.92;margin-top:8px;font-weight:700}
+
+  .chips{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:12px}
+  .chip{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.4);border-radius:999px;padding:6px 12px;font-weight:800;font-size:13px}
+
+  .meta{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin:14px 0}
+  .meta .top{display:flex;justify-content:space-between;align-items:baseline;font-weight:800}
+  .meta .top b{font-family:'Archivo',sans-serif;color:var(--roxo);font-size:18px}
+  .bar{height:14px;background:#F0E4F2;border-radius:999px;overflow:hidden;margin-top:8px}
+  .bar > i{display:block;height:100%;background:linear-gradient(90deg,var(--roxo2),var(--rosa));width:0;transition:width .5s}
+  .meta small{display:block;color:var(--muted);font-size:12px;margin-top:6px;font-weight:700}
+
+  .como{display:flex;gap:8px;margin:12px 0}
+  .como div{flex:1;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center;font-size:12px;font-weight:800;color:var(--roxo)}
+  .como span{display:block;font-size:20px;margin-bottom:2px}
+
+  h2.sec{font-family:'Archivo',sans-serif;font-weight:800;color:var(--roxo);margin:16px 0 8px;font-size:16px}
+  .legenda{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;font-weight:700;color:var(--muted);margin-bottom:10px}
+  .legenda i{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-1px;margin-right:4px}
+  .lg-livre{background:#fff;border:1.5px solid var(--line)} .lg-sel{background:var(--rosa)} .lg-res{background:var(--amar-bg);border:1.5px solid var(--amar)} .lg-pago{background:#EFE3F5;border:1.5px solid var(--roxo2)}
+
+  .grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(46px,1fr));gap:6px}
+  .num{aspect-ratio:1/1;border:1.5px solid var(--line);border-radius:9px;background:#fff;color:var(--ink);
+       font-family:'Archivo',sans-serif;font-weight:800;font-size:13px;cursor:pointer;display:grid;place-content:center}
+  .num:hover{border-color:var(--roxo2)}
+  .num.sel{background:var(--rosa);border-color:var(--rosa);color:#fff}
+  .num.res{background:var(--amar-bg);border-color:var(--amar);color:var(--amar);cursor:not-allowed}
+  .num.pago{background:#EFE3F5;border-color:var(--roxo2);color:var(--roxo2);cursor:not-allowed;text-decoration:line-through}
+
+  .premio{background:linear-gradient(135deg,#FFF3FA,#F3E9FB);border:1px solid var(--line);border-radius:14px;padding:14px;margin:16px 0;text-align:center}
+  .premio b{font-family:'Archivo',sans-serif;color:var(--rosa);font-size:16px}
+  .premio p{color:var(--muted);font-size:13px;font-weight:700;margin-top:4px}
+
+  .barra{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);box-shadow:0 -6px 18px rgba(91,26,139,.12);padding:10px 14px;z-index:5}
+  .barra .in{max-width:860px;margin:0 auto;display:flex;align-items:center;gap:12px}
+  .barra .info{flex:1;font-weight:800;color:var(--roxo);font-size:14px}
+  .barra .info small{display:block;color:var(--muted);font-weight:700;font-size:12px}
+  .barra button{background:var(--rosa);color:#fff;border:0;border-radius:10px;padding:14px 18px;font-family:'Archivo',sans-serif;font-weight:800;font-size:15px;cursor:pointer}
+  .barra button:disabled{background:#D9C7E0;cursor:not-allowed}
+
+  /* pagamento */
+  .over{position:fixed;inset:0;background:rgba(42,20,64,.55);display:none;z-index:20;align-items:flex-end}
+  .over.on{display:flex}
+  .sheet{background:#fff;width:100%;max-width:860px;margin:0 auto;border-radius:18px 18px 0 0;padding:18px 16px 24px;max-height:92vh;overflow:auto}
+  .sheet h3{font-family:'Archivo',sans-serif;color:var(--roxo);font-size:19px;margin-bottom:4px}
+  .sheet .tot{font-family:'Archivo',sans-serif;color:var(--rosa);font-size:26px;margin:2px 0 12px}
+  .sheet label{display:block;font-size:12px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.3px;margin:10px 0 3px}
+  .sheet input[type=text]{width:100%;padding:11px;border:1.5px solid var(--line);border-radius:10px;font:inherit;font-weight:700;color:var(--ink);background:#FCF7FD}
+  .pixbox{background:#FCF7FD;border:1.5px solid var(--line);border-radius:10px;padding:10px;margin-top:6px}
+  .pixbox .k{font-family:monospace;font-size:11px;color:var(--muted);word-break:break-all;max-height:52px;overflow:auto}
+  .pixbtn{width:100%;margin-top:8px;background:var(--roxo2);color:#fff;border:0;border-radius:10px;padding:13px;font-family:'Archivo',sans-serif;font-weight:800;font-size:15px;cursor:pointer}
+  .banco{font-size:13px;font-weight:800;color:var(--roxo);margin-top:8px;text-align:center}
+  .drop{border:2px dashed var(--roxo2);border-radius:12px;padding:20px;text-align:center;background:#FCF7FD;cursor:pointer;margin-top:6px}
+  .drop b{display:block;font-family:'Archivo',sans-serif;color:var(--roxo);margin-top:4px}
+  .drop small{color:var(--muted);font-size:12px;font-weight:700}
+  #prev{margin-top:10px;display:none} #prev img{max-width:150px;border-radius:10px;border:1px solid var(--line)}
+  .enviar{width:100%;margin-top:14px;background:var(--rosa);color:#fff;border:0;border-radius:12px;padding:15px;font-family:'Archivo',sans-serif;font-weight:800;font-size:16px;cursor:pointer}
+  .enviar:disabled{background:#D9C7E0;cursor:not-allowed}
+  .fechar{background:none;border:0;color:var(--muted);font:inherit;font-weight:800;cursor:pointer;float:right}
+
+  .fim{background:#fff;border-radius:16px;padding:26px 18px;text-align:center}
+  .fim .big{font-family:'Archivo',sans-serif;color:var(--ok);font-size:22px;font-weight:900}
+  .fim p{color:var(--muted);font-weight:700;margin-top:8px}
+  .fim .nums{font-family:'Archivo',sans-serif;color:var(--roxo);font-size:20px;margin:10px 0}
+  .fim button{margin-top:14px;background:var(--roxo);color:#fff;border:0;border-radius:10px;padding:13px 22px;font-weight:800;cursor:pointer;font-family:'Archivo',sans-serif}
+
+  .toast{position:fixed;left:14px;right:14px;bottom:96px;background:var(--roxo);color:#fff;padding:13px;border-radius:10px;font-weight:800;text-align:center;display:none;z-index:30}
+  .toast.erro{background:#B4232A}
+  .foot{text-align:center;color:var(--muted);font-size:12px;font-weight:700;margin:22px 0}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>RIFA SOLIDÁRIA</h1>
+  <div class="sub">Juntos pela Priscila 💜</div>
+  <p>Uma ação entre amigos para ajudar nos custos da cirurgia e recuperação</p>
+  <div class="chips"><span class="chip">350 números</span><span class="chip">R$ 15 cada</span><span class="chip">Pagamento via Pix</span></div>
+</header>
+
+<main class="wrap">
+  <div class="meta">
+    <div class="top"><span>Meta da campanha</span><b id="mArrec">R$ 0</b></div>
+    <div class="bar"><i id="mBar"></i></div>
+    <small id="mTxt">de R$ 5.000 · carregando…</small>
+  </div>
+
+  <div class="como">
+    <div><span>①</span>Escolha seu número</div>
+    <div><span>②</span>Faça o Pix</div>
+    <div><span>③</span>Envie o comprovante</div>
+  </div>
+
+  <div class="premio">
+    <b>🎁 Prêmio: Cesta de chocolate</b>
+    <p id="premioTxt">O sorteio será realizado quando atingirmos a meta ou em até 1 mês.</p>
+  </div>
+
+  <h2 class="sec">Escolha seu(s) número(s)</h2>
+  <div class="legenda">
+    <span><i class="lg-livre"></i>livre</span>
+    <span><i class="lg-sel"></i>seu escolhido</span>
+    <span><i class="lg-res"></i>reservado</span>
+    <span><i class="lg-pago"></i>pago</span>
+  </div>
+  <div class="grade" id="grade"></div>
+
+  <div class="foot">Cada número faz a diferença! 💜 · Contamos com seu apoio</div>
+</main>
+
+<div class="barra">
+  <div class="in">
+    <div class="info" id="selInfo">Nenhum número selecionado<small>toque nos números livres</small></div>
+    <button id="continuar" disabled>Continuar</button>
+  </div>
+</div>
+
+<!-- Pagamento -->
+<div class="over" id="over">
+  <div class="sheet">
+    <button class="fechar" id="fechar">fechar ✕</button>
+    <h3>Quase lá!</h3>
+    <div class="tot" id="totPagar">R$ 0,00</div>
+
+    <label>Seu nome</label>
+    <input type="text" id="nome" placeholder="Nome completo" autocomplete="name">
+    <label>WhatsApp / contato</label>
+    <input type="text" id="contato" placeholder="(00) 00000-0000">
+
+    <label>1) Copie a chave Pix e pague o valor acima</label>
+    <div class="pixbox"><div class="k" id="pixK"></div></div>
+    <button class="pixbtn" id="copiar">📋 Copiar chave Pix</button>
+    <div class="banco">Banco Pan · Amanda Santana</div>
+
+    <label>2) Anexe o comprovante do Pix</label>
+    <div class="drop" id="drop"><div style="font-size:26px">🧾</div><b>Toque para enviar o comprovante</b><small>print da tela do Pix, nítido</small></div>
+    <input type="file" id="arquivo" accept="image/*" hidden>
+    <div id="prev"><img id="prevImg" alt="prévia"></div>
+
+    <button class="enviar" id="enviar" disabled>Reservar meus números</button>
+  </div>
+</div>
+
+<div class="fim" id="fim" style="display:none;position:fixed;inset:0;z-index:40;overflow:auto"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===== CONFIG ===== */
+const RIFA_URL = 'https://script.google.com/macros/s/AKfycbyP7cv0N87boFORGBqlx97xcijbyXJgXZE1UkAl1B_BD2Ly3lxI2ZVYEm-9GyAw_fwk/exec';   // /exec da implantação da rifa
+const PIX = '00020101021126850014br.gov.bcb.pix0136e2f0a13a-6db2-4049-948a-5f972e91fcb70223Rifa Solidaria Priscila5204000053039865802BR5923Amanda Santana Da Silva6009SAO PAULO61080131010062250521RifaSolidariaPriscila6304DC9A';
+const TOTAL=350, PRECO=15, META=5000, MAX_DIM=1400, JPEG_Q=0.82;
+
+const el=id=>document.getElementById(id);
+const sel=new Set(); let ocupados={}, imgB64='';
+const brl=v=>'R$ '+Number(v).toLocaleString('pt-BR',{minimumFractionDigits:2});
+function pad(n){ return ('00'+String(n).replace(/\D/g,'')).slice(-3); }
+
+/* grade */
+function montaGrade(){ const g=el('grade'); g.innerHTML='';
+  for(let i=1;i<=TOTAL;i++){ const n=pad(i); const b=document.createElement('button');
+    b.className='num'; b.textContent=n; b.dataset.n=n;
+    b.addEventListener('click',()=>toggle(n,b)); g.appendChild(b); }
+}
+function toggle(n,b){ if(ocupados[n]) return;
+  if(sel.has(n)){ sel.delete(n); b.classList.remove('sel'); } else { sel.add(n); b.classList.add('sel'); }
+  atualizaBarra();
+}
+function atualizaBarra(){ const q=sel.size;
+  el('selInfo').innerHTML = q ? ('<b>'+q+'</b> número'+(q>1?'s':'')+' · '+brl(q*PRECO)+'<small>'+[...sel].sort().join(', ')+'</small>')
+                              : 'Nenhum número selecionado<small>toque nos números livres</small>';
+  el('continuar').disabled = q===0;
+}
+
+/* status/meta */
+function carrega(){ fetch(RIFA_URL+'?tipo=status').then(r=>r.json()).then(res=>{ if(!res||!res.ok) return;
+  ocupados = res.ocupados||{};
+  document.querySelectorAll('.num').forEach(b=>{ const st=ocupados[b.dataset.n];
+    b.classList.remove('res','pago'); if(st==='reservado') b.classList.add('res'); else if(st==='pago') b.classList.add('pago');
+    if(st && sel.has(b.dataset.n)){ sel.delete(b.dataset.n); b.classList.remove('sel'); } });
+  const arr=res.pagoValor||0, pct=Math.min(100,Math.round(arr/META*100));
+  el('mArrec').textContent=brl(arr); el('mBar').style.width=pct+'%';
+  el('mTxt').textContent='de '+brl(META)+' · '+pct+'% · '+(res.pagoQtd||0)+' número(s) confirmado(s)';
+  atualizaBarra();
+}).catch(()=>{}); }
+
+/* copiar pix */
+el('copiar').addEventListener('click',()=>{ const t=PIX;
+  if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(t).then(()=>toast('Chave Pix copiada! 📋')).catch(()=>fallback(t)); }
+  else fallback(t); });
+function fallback(t){ const ta=document.createElement('textarea'); ta.value=t; document.body.appendChild(ta); ta.select();
+  try{ document.execCommand('copy'); toast('Chave Pix copiada! 📋'); }catch(e){ toast('Copie manualmente a chave.',true); } document.body.removeChild(ta); }
+
+/* abrir/fechar pagamento */
+el('continuar').addEventListener('click',()=>{ if(!sel.size) return;
+  el('totPagar').textContent=brl(sel.size*PRECO); el('pixK').textContent=PIX; el('over').classList.add('on'); });
+el('fechar').addEventListener('click',()=>el('over').classList.remove('on'));
+
+/* upload */
+el('drop').addEventListener('click',()=>el('arquivo').click());
+el('arquivo').addEventListener('change',e=>{ const f=e.target.files[0]; if(!f) return;
+  if(!f.type.startsWith('image/')){ toast('Envie uma imagem (print).',true); return; }
+  comprime(f,url=>{ imgB64=url.split(',')[1]||''; el('prevImg').src=url; el('prev').style.display='block'; revalida(); }); });
+function comprime(file,cb){ const r=new FileReader(); r.onload=ev=>{ const im=new Image();
+  im.onload=()=>{ let w=im.width,h=im.height;
+    if(w>h&&w>MAX_DIM){h=Math.round(h*MAX_DIM/w);w=MAX_DIM;} else if(h>=w&&h>MAX_DIM){w=Math.round(w*MAX_DIM/h);h=MAX_DIM;}
+    const c=document.createElement('canvas'); c.width=w; c.height=h; c.getContext('2d').drawImage(im,0,0,w,h);
+    cb(c.toDataURL('image/jpeg',JPEG_Q)); }; im.src=ev.target.result; }; r.readAsDataURL(file); }
+
+['nome','contato'].forEach(id=>el(id).addEventListener('input',revalida));
+function revalida(){ el('enviar').disabled = !(el('nome').value.trim().length>2 && imgB64 && sel.size); }
+
+/* enviar */
+el('enviar').addEventListener('click',()=>{
+  if(!(el('nome').value.trim() && imgB64 && sel.size)) return;
+  const b=el('enviar'); b.disabled=true; b.textContent='Enviando…';
+  const payload={ nome:el('nome').value.trim(), contato:el('contato').value.trim(),
+    numeros:[...sel], imgBase64:imgB64, imgTipo:'image/jpeg' };
+  fetch(RIFA_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)})
+    .then(r=>r.json()).then(res=>{ b.textContent='Reservar meus números';
+      if(!res||!res.ok){ toast('Não consegui enviar. Tente de novo.',true); b.disabled=false; return; }
+      if(res.ocupado){ toast('Os números '+res.conflito.join(', ')+' já foram escolhidos. Escolha outros.',true);
+        carrega(); el('over').classList.remove('on'); b.disabled=false; return; }
+      // sucesso
+      el('over').classList.remove('on');
+      el('fim').innerHTML='<div style="max-width:520px;margin:0 auto;padding:24px 16px"><div class="fim">'+
+        '<div class="big">💜 Números reservados!</div>'+
+        '<div class="nums">'+res.numeros.join(' · ')+'</div>'+
+        '<p>Recebemos seu comprovante. Assim que confirmarmos o pagamento, seus números entram na rifa. Obrigada por apoiar a Priscila!</p>'+
+        '<button onclick="location.reload()">Escolher mais números</button></div></div>';
+      el('fim').style.display='block';
+    }).catch(()=>{ toast('Sem conexão. Tente de novo.',true); b.disabled=false; b.textContent='Reservar meus números'; });
+});
+
+let tT; function toast(m,erro){ const t=el('toast'); t.textContent=m; t.className='toast'+(erro?' erro':''); t.style.display='block'; clearTimeout(tT); tT=setTimeout(()=>t.style.display='none',4500); }
+
+montaGrade(); carrega(); setInterval(carrega,30000);
+</script>
+</body>
+</html>

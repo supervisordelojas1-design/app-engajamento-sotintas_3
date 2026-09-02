@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rifa · Administração</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800;900&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{ --roxo:#5B1A8B; --roxo2:#7B2CBF; --rosa:#E5399B; --ink:#2A1440; --muted:#6E5A82; --paper:#F5EEF6; --card:#fff; --line:#E5D5E8;
+         --ok:#1B7A3D; --ok-bg:#E4F4E9; --no:#B4232A; --no-bg:#FCE8E9; --amar:#C98A00; --amar-bg:#FBF1D6; }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--paper);color:var(--ink);font-weight:600}
+  header{background:var(--roxo);color:#fff;padding:16px}
+  .wrap{max-width:900px;margin:0 auto;padding:0 14px}
+  header h1{font-family:'Archivo',sans-serif;font-weight:800;font-size:18px}
+  .tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px}
+  .tools .tab{font:inherit;border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.14);color:#fff;border-radius:999px;padding:7px 14px;font-weight:800;cursor:pointer}
+  .tools .tab.on{background:#fff;color:var(--roxo)}
+  .tools .b{font:inherit;border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.14);color:#fff;border-radius:8px;padding:7px 12px;font-weight:800;cursor:pointer}
+  .cnt{background:#fff;color:var(--roxo);border-radius:999px;padding:6px 12px;font-family:'Archivo';font-weight:800}
+
+  .login{max-width:340px;margin:60px auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:22px;text-align:center}
+  .login h2{font-family:'Archivo',sans-serif;color:var(--roxo);margin-bottom:12px}
+  .login input{width:100%;padding:12px;border:1.5px solid var(--line);border-radius:10px;font:inherit;font-weight:800;text-align:center;letter-spacing:3px}
+  .login button{width:100%;margin-top:10px;background:var(--rosa);color:#fff;border:0;border-radius:10px;padding:13px;font-weight:800;cursor:pointer;font-family:'Archivo'}
+
+  .resumo{display:flex;gap:10px;margin:14px 0;flex-wrap:wrap}
+  .kpi{flex:1;min-width:120px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px;text-align:center}
+  .kpi b{display:block;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+  .kpi strong{font-family:'Archivo',sans-serif;color:var(--roxo);font-size:24px}
+  .bar{height:12px;background:#EbdfEe;border-radius:999px;overflow:hidden;margin:6px 0 0}
+  .bar > i{display:block;height:100%;background:linear-gradient(90deg,var(--roxo2),var(--rosa));width:0}
+
+  .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:12px;display:flex;gap:12px}
+  .card .print{flex:0 0 120px}
+  .card .print img{width:120px;border-radius:10px;border:1px solid var(--line)}
+  .card .print a{font-size:12px;color:var(--roxo2);font-weight:800}
+  .card .info{flex:1;min-width:0}
+  .who b{font-family:'Archivo',sans-serif;color:var(--roxo);font-size:16px}
+  .who span{color:var(--muted);font-size:12px;font-weight:700}
+  .tags{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+  .tag{background:#F3EAF6;color:var(--roxo);border-radius:999px;padding:4px 9px;font-size:12px;font-weight:800}
+  .tag.pago{background:#EFE3F5;color:var(--roxo2)}
+  .conf{border-radius:999px;padding:4px 9px;font-size:12px;font-weight:800}
+  .conf.sim{background:var(--ok-bg);color:var(--ok)} .conf.nao{background:var(--amar-bg);color:var(--amar)}
+  .nums{font-family:'Archivo',sans-serif;color:var(--ink);font-size:14px;margin:6px 0}
+  .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+  .acts button{flex:1 1 40%;border:0;border-radius:10px;padding:11px;font-family:'Archivo';font-weight:800;cursor:pointer}
+  .val{background:var(--ok-bg);color:var(--ok)} .rej{background:var(--no-bg);color:var(--no)}
+  .vazio{text-align:center;color:var(--muted);font-weight:700;padding:30px}
+
+  .sorteio{background:linear-gradient(135deg,var(--roxo),var(--rosa));color:#fff;border-radius:14px;padding:16px;text-align:center;margin:14px 0}
+  .sorteio button{background:#fff;color:var(--roxo);border:0;border-radius:10px;padding:12px 18px;font-family:'Archivo';font-weight:800;cursor:pointer;margin-top:8px}
+  .sorteio .g{font-family:'Archivo',sans-serif;font-size:34px;margin-top:8px}
+  .toast{position:fixed;left:14px;right:14px;bottom:16px;background:var(--roxo);color:#fff;padding:12px;border-radius:10px;font-weight:800;text-align:center;display:none}
+  .toast.erro{background:var(--no)}
+</style>
+</head>
+<body>
+
+<header><div class="wrap">
+  <h1>🎟️ Rifa Solidária · Administração</h1>
+  <div class="tools" id="tools" style="display:none">
+    <button class="tab on" id="tbP">Aguardando</button>
+    <button class="tab" id="tbC">Confirmados</button>
+    <button class="b" id="refresh">Atualizar</button>
+    <span class="cnt" id="cnt">0</span>
+  </div>
+</div></header>
+
+<main class="wrap">
+  <div class="login" id="login">
+    <h2>Painel da Rifa</h2>
+    <input type="password" id="pin" placeholder="senha" inputmode="numeric">
+    <button id="entrar">Entrar</button>
+  </div>
+
+  <div id="painel" style="display:none">
+    <div class="resumo">
+      <div class="kpi"><b>Arrecadado</b><strong id="kArr">R$ 0</strong><div class="bar"><i id="kBar"></i></div></div>
+      <div class="kpi"><b>Confirmados</b><strong id="kPago">0</strong></div>
+      <div class="kpi"><b>Aguardando</b><strong id="kRes">0</strong></div>
+    </div>
+
+    <div class="sorteio">
+      🎁 Sorteio da cesta de chocolate
+      <div><button id="sortear">Sortear ganhador</button></div>
+      <div class="g" id="ganhador"></div>
+    </div>
+
+    <div id="lista"></div>
+    <div class="vazio" id="vazio" style="display:none">Nada por aqui.</div>
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const BASE_URL = 'https://script.google.com/macros/s/AKfycbyP7cv0N87boFORGBqlx97xcijbyXJgXZE1UkAl1B_BD2Ly3lxI2ZVYEm-9GyAw_fwk/exec';   // /exec da implantação da rifa
+const META=5000;
+const el=id=>document.getElementById(id);
+let PIN='', modo='reservado', itens=[];
+const brl=v=>'R$ '+Number(v).toLocaleString('pt-BR',{minimumFractionDigits:2});
+
+el('entrar').addEventListener('click',entrar);
+el('pin').addEventListener('keydown',e=>{ if(e.key==='Enter') entrar(); });
+function entrar(){ PIN=el('pin').value.trim(); if(!PIN){ toast('Digite a senha.',true); return; } carrega(true); }
+
+function carrega(primeira){
+  fetch(BASE_URL+'?tipo=admin&pin='+encodeURIComponent(PIN))
+    .then(r=>r.json()).then(res=>{
+      if(!res||!res.ok){ if(res&&res.erro==='pin'){ toast('Senha incorreta.',true); } else toast('Erro ao carregar.',true); return; }
+      if(primeira){ el('login').style.display='none'; el('painel').style.display='block'; el('tools').style.display='flex'; }
+      itens=res.itens||[];
+      const arr=res.pagoValor||0, pct=Math.min(100,Math.round(arr/META*100));
+      el('kArr').textContent=brl(arr); el('kBar').style.width=pct+'%';
+      el('kPago').textContent=res.pagoQtd||0; el('kRes').textContent=res.reservadoQtd||0;
+      render();
+    }).catch(()=>toast('Sem conexão.',true));
+}
+
+function render(){
+  const lista = itens.filter(x=>x.status===modo);
+  el('cnt').textContent = lista.length + (modo==='reservado'?' aguardando':' confirmados');
+  const box=el('lista'); box.innerHTML=''; el('vazio').style.display=lista.length?'none':'block';
+  el('vazio').textContent = modo==='reservado' ? 'Nenhum pagamento aguardando.' : 'Nenhum pagamento confirmado ainda.';
+  lista.forEach(p=>{
+    const c=document.createElement('div'); c.className='card';
+    const img = p.img ? '<img src="'+p.img+'" referrerpolicy="no-referrer" onerror="this.style.display=\'none\'"><br><a href="'+p.link+'" target="_blank">abrir ↗</a>'
+                      : '<a href="'+p.link+'" target="_blank">abrir comprovante ↗</a>';
+    const conf = p.confere==='sim' ? '<span class="conf sim">valor confere ✓</span>' : '<span class="conf nao">conferir valor ✗</span>';
+    const acts = modo==='reservado'
+      ? '<button class="val" data-proto="'+p.proto+'" data-t="confirmar">✓ Confirmar pagamento</button><button class="rej" data-proto="'+p.proto+'" data-t="rejeitar">✕ Rejeitar</button>'
+      : '<button class="rej" data-proto="'+p.proto+'" data-t="rejeitar">✕ Cancelar (liberar números)</button>';
+    c.innerHTML='<div class="print">'+img+'</div><div class="info">'+
+      '<div class="who"><b>'+p.nome+'</b> <span>'+(p.contato||'')+' · '+p.data+'</span></div>'+
+      '<div class="nums">Números: '+p.numeros+'  ('+p.qtd+')</div>'+
+      '<div class="tags"><span class="tag'+(modo==='pago'?' pago':'')+'">esperado '+brl(p.esperado)+'</span>'+
+        '<span class="tag">lido '+(p.valorLido||'—')+'</span>'+conf+'</div>'+
+      '<div class="acts">'+acts+'</div></div>';
+    box.appendChild(c);
+  });
+  box.querySelectorAll('.acts button').forEach(b=> b.addEventListener('click',()=>decide(b.dataset.proto,b.dataset.t,b)));
+}
+
+function decide(proto,tipo,btn){
+  if(tipo==='rejeitar' && !confirm('Rejeitar/cancelar e liberar os números deste envio?')) return;
+  const card=btn.closest('.card'); card.style.opacity=.5; card.querySelectorAll('button').forEach(x=>x.disabled=true);
+  fetch(BASE_URL+'?tipo='+tipo+'&pin='+encodeURIComponent(PIN)+'&proto='+encodeURIComponent(proto))
+    .then(r=>r.json()).then(res=>{ if(res&&res.ok){ itens=itens.filter(x=>x.proto!==proto); render(); carrega(false);
+        toast(tipo==='confirmar'?'Pagamento confirmado ✓':'Envio rejeitado'); }
+      else throw new Error(); })
+    .catch(()=>{ card.style.opacity=1; card.querySelectorAll('button').forEach(x=>x.disabled=false); toast('Não consegui salvar.',true); });
+}
+
+el('refresh').addEventListener('click',()=>carrega(false));
+el('tbP').addEventListener('click',()=>{ modo='reservado'; el('tbP').classList.add('on'); el('tbC').classList.remove('on'); render(); });
+el('tbC').addEventListener('click',()=>{ modo='pago'; el('tbC').classList.add('on'); el('tbP').classList.remove('on'); render(); });
+
+el('sortear').addEventListener('click',()=>{
+  if(!confirm('Sortear um ganhador entre os números confirmados (pagos)?')) return;
+  fetch(BASE_URL+'?tipo=sortear&pin='+encodeURIComponent(PIN)).then(r=>r.json()).then(res=>{
+    if(!res||!res.ok){ toast('Erro no sorteio.',true); return; }
+    if(!res.ganhador){ toast('Ainda não há números confirmados para sortear.',true); return; }
+    el('ganhador').textContent='🏆 Número '+res.ganhador;
+    toast('Ganhador sorteado entre '+res.entre+' números!');
+  }).catch(()=>toast('Sem conexão.',true));
+});
+
+let tT; function toast(m,erro){ const t=el('toast'); t.textContent=m; t.className='toast'+(erro?' erro':''); t.style.display='block'; clearTimeout(tT); tT=setTimeout(()=>t.style.display='none',4500); }
+</script>
+</body>
+</html>
